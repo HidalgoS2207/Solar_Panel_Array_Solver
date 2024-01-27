@@ -24,7 +24,7 @@ namespace Entities
 		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
 	protected:
 		Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position);
-	private:
+
 		unsigned int tiles;
 		std::vector<bool> tilesDistMap;
 		std::pair<unsigned int, unsigned int> tilesDistribution;
@@ -46,6 +46,8 @@ namespace Entities
 
 		unsigned int getInfluenceTiles();
 		double getWireTilesDistance();
+
+		int getInfluenceArea();
 	protected:
 		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType);
 	private:

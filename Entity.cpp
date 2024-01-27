@@ -60,6 +60,11 @@ double Entities::ElectricPole::getWireTilesDistance()
 	return wireTilesDistance;
 }
 
+int Entities::ElectricPole::getInfluenceArea()
+{
+	return (influenceTiles * 2) - (tilesDistribution.first * tilesDistribution.second);
+}
+
 Entities::SmallElectricPole::SmallElectricPole()
 	:
 	ElectricPole({ true }, { 1,1 }, 5, 7.5, ELECTRIC_POLE_TYPE::SMALL)
