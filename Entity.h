@@ -32,6 +32,24 @@ namespace Entities
 		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleInfluence;
 	};
 
+	static struct ElectricPoleAreaOccupiedByType
+	{
+	private:
+		static std::map<ELECTRIC_POLE_TYPE, unsigned int> createMap()
+		{
+			std::map<ELECTRIC_POLE_TYPE, unsigned int> auxMap;
+
+			auxMap[ELECTRIC_POLE_TYPE::SMALL] = 1;
+			auxMap[ELECTRIC_POLE_TYPE::MEDIUM] = 1;
+			auxMap[ELECTRIC_POLE_TYPE::BIG] = 4;
+			auxMap[ELECTRIC_POLE_TYPE::SUBSTATION] = 4;
+
+			return auxMap;
+		}
+	public:
+		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleAreaOccupied;
+	};
+
 	class Entity
 	{
 	public:

@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence = Entities::ElectricPoleInfluenceTilesByType::createMap();
+const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied = Entities::ElectricPoleAreaOccupiedByType::createMap();
 
 Entities::Entity::Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position)
 	:
@@ -34,7 +35,7 @@ void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosi
 
 Entities::SolarPanel::SolarPanel()
 	:
-	Entity({ true,true,true,true }, { 2,2 }, { 0,0 })
+	Entity({ true,true,true,true,true,true }, { 3,3 }, { 0,0 })
 {}
 
 Entities::SolarPanel::~SolarPanel()
@@ -64,7 +65,7 @@ double Entities::ElectricPole::getWireTilesDistance()
 
 int Entities::ElectricPole::getInfluenceArea()
 {
-	return (influenceTiles * 2) - (tilesDistribution.first * tilesDistribution.second);
+	return (influenceTiles * influenceTiles) - (tilesDistribution.first * tilesDistribution.second);
 }
 
 Entities::SmallElectricPole::SmallElectricPole()

@@ -55,7 +55,9 @@ int main(int argc, char* argv[])
 	const int totalOccupiedSurfaceActiveEntities = totalOccupiedSurfaceSolarPanels + totalOccupiedSurfaceAccumulators;
 
 	unsigned int numPolesRequired = 0;
-	Solver::calculateNumberOfPolesByEfectiveArea(totalOccupiedSurfaceActiveEntities, preferredElectricPoleType,numPolesRequired);
+	Solver::calculateNumberOfPolesByEffectiveArea(totalOccupiedSurfaceActiveEntities, preferredElectricPoleType,numPolesRequired);
+
+	std::cout << "Number of Poles Calculated = " << numPolesRequired;
 
 	return 0;
 }

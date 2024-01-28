@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include <math.h>
 
 class Solver
 {
@@ -31,5 +32,5 @@ public:
 		return ret;
 	}
 
-	static void calculateNumberOfPolesByEfectiveArea(const unsigned int efectiveArea, const Entities::ELECTRIC_POLE_TYPE preferredElectricPoleType, unsigned int& numPoles);
+	static void calculateNumberOfPolesByEffectiveArea(const unsigned int effectiveArea, const Entities::ELECTRIC_POLE_TYPE prefferedElectricPoleType, unsigned int& numPoles);
 };
