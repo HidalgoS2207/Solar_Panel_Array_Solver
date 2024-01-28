@@ -5,6 +5,11 @@
 
 namespace Entities
 {
+	const unsigned int SolarPanelSideNumTiles = 3;
+	const unsigned int AccumulatorSideNumTiles = 2;
+
+	const unsigned int maxGapBetweenPolesInflueceArea = (SolarPanelSideNumTiles);
+
 	enum ELECTRIC_POLE_TYPE
 	{
 		INVALID = 0,
@@ -48,6 +53,24 @@ namespace Entities
 		}
 	public:
 		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleAreaOccupied;
+	};
+
+	static struct ElectricPoleWireTilesDistanceByType
+	{
+	private:
+		static std::map<ELECTRIC_POLE_TYPE, double> createMap()
+		{
+			std::map<ELECTRIC_POLE_TYPE, double> auxMap;
+
+			auxMap[ELECTRIC_POLE_TYPE::SMALL] = 7.5;
+			auxMap[ELECTRIC_POLE_TYPE::MEDIUM] = 9;
+			auxMap[ELECTRIC_POLE_TYPE::BIG] = 30;
+			auxMap[ELECTRIC_POLE_TYPE::SUBSTATION] = 18;
+
+			return auxMap;
+		}
+	public:
+		static const std::map<ELECTRIC_POLE_TYPE, double> ElectricPoleWireTilesDistance;
 	};
 
 	class Entity

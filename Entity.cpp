@@ -2,6 +2,7 @@
 
 const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence = Entities::ElectricPoleInfluenceTilesByType::createMap();
 const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied = Entities::ElectricPoleAreaOccupiedByType::createMap();
+const std::map<Entities::ELECTRIC_POLE_TYPE, double> Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance = Entities::ElectricPoleWireTilesDistanceByType::createMap();
 
 Entities::Entity::Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position)
 	:
@@ -35,7 +36,7 @@ void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosi
 
 Entities::SolarPanel::SolarPanel()
 	:
-	Entity({ true,true,true,true,true,true }, { 3,3 }, { 0,0 })
+	Entity({ true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 })
 {}
 
 Entities::SolarPanel::~SolarPanel()
@@ -70,7 +71,13 @@ int Entities::ElectricPole::getInfluenceArea()
 
 Entities::SmallElectricPole::SmallElectricPole()
 	:
-	ElectricPole({ true }, { 1,1 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SMALL), 7.5, ELECTRIC_POLE_TYPE::SMALL)
+	ElectricPole
+	(
+		{ true },
+		{ 1,1 },
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SMALL),
+		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::SMALL),
+		ELECTRIC_POLE_TYPE::SMALL)
 {}
 
 Entities::SmallElectricPole::~SmallElectricPole()
@@ -78,7 +85,14 @@ Entities::SmallElectricPole::~SmallElectricPole()
 
 Entities::MediumElectricPole::MediumElectricPole()
 	:
-	ElectricPole({ true }, { 1,1 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM), 9.0, ELECTRIC_POLE_TYPE::MEDIUM)
+	ElectricPole
+	(
+		{ true },
+		{ 1,1 },
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM), 
+		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::MEDIUM),
+		ELECTRIC_POLE_TYPE::MEDIUM
+	)
 {}
 
 Entities::MediumElectricPole::~MediumElectricPole()
@@ -86,7 +100,14 @@ Entities::MediumElectricPole::~MediumElectricPole()
 
 Entities::BigElectricPole::BigElectricPole()
 	:
-	ElectricPole({ true,true,true,true }, { 2,2 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG), 30.0, ELECTRIC_POLE_TYPE::BIG)
+	ElectricPole
+	(
+		{ true,true,true,true },
+		{ 2,2 }, 
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG), 
+		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::BIG),
+		ELECTRIC_POLE_TYPE::BIG
+	)
 {}
 
 Entities::BigElectricPole::~BigElectricPole()
@@ -94,7 +115,14 @@ Entities::BigElectricPole::~BigElectricPole()
 
 Entities::SubStation::SubStation()
 	:
-	ElectricPole({ true,true,true,true }, { 2,2 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SUBSTATION), 18.0, ELECTRIC_POLE_TYPE::SUBSTATION)
+	ElectricPole
+	(
+		{ true,true,true,true }, 
+		{ 2,2 }, 
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SUBSTATION),
+		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::SUBSTATION),
+		ELECTRIC_POLE_TYPE::SUBSTATION
+	)
 {}
 
 Entities::SubStation::~SubStation()
@@ -102,7 +130,7 @@ Entities::SubStation::~SubStation()
 
 Entities::Accumulator::Accumulator()
 	:
-	Entity({ true,true,true,true }, { 2,2 }, { 0,0 })
+	Entity({ true,true,true,true }, { AccumulatorSideNumTiles,AccumulatorSideNumTiles }, { 0,0 })
 {}
 
 Entities::Accumulator::~Accumulator()
