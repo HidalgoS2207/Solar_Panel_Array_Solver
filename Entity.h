@@ -8,6 +8,7 @@ namespace Entities
 	const unsigned int SolarPanelSideNumTiles = 3;
 	const unsigned int AccumulatorSideNumTiles = 2;
 
+	//This constant should allow to separate influence areas without the risk of leaving a one tile gap with no entities
 	const unsigned int maxGapBetweenPolesInflueceArea = (SolarPanelSideNumTiles);
 
 	enum ELECTRIC_POLE_TYPE
@@ -19,7 +20,7 @@ namespace Entities
 		SUBSTATION
 	};
 
-	static struct ElectricPoleInfluenceTilesByType
+	struct ElectricPoleInfluenceTilesByType
 	{
 	private:
 		static std::map<ELECTRIC_POLE_TYPE, unsigned int> createMap()
@@ -37,7 +38,7 @@ namespace Entities
 		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleInfluence;
 	};
 
-	static struct ElectricPoleAreaOccupiedByType
+	struct ElectricPoleAreaOccupiedByType
 	{
 	private:
 		static std::map<ELECTRIC_POLE_TYPE, unsigned int> createMap()
@@ -55,7 +56,7 @@ namespace Entities
 		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleAreaOccupied;
 	};
 
-	static struct ElectricPoleWireTilesDistanceByType
+	struct ElectricPoleWireTilesDistanceByType
 	{
 	private:
 		static std::map<ELECTRIC_POLE_TYPE, double> createMap()

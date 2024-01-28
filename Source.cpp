@@ -17,14 +17,11 @@ int main(int argc, char* argv[])
 		);
 	const unsigned int numPolesRequired = IOUtil::KbdIO::userInputPrompt("\nNumber of wanted Electric Poles:\n>", "Error. Out of range.\n", { 1,9999 }, 0);
 	//! Preferences Settings
-	const bool calculateForSelfContained = static_cast<bool>(
-		IOUtil::KbdIO::userInputPrompt("\nCalculate for self contained system [Full tilable]:\n1.Yes\n2.No\n>", "Error. Out of range.\n", { 1,2 }, -1)
-		);
 	const CalculationsUtility::PolesArrangementMethod polesArrangementMethod = static_cast<CalculationsUtility::PolesArrangementMethod>(
 		IOUtil::KbdIO::userInputPrompt("\nPoles Arrangemnet Preffered Method:\n1.Linear\n2.Rectangular\n>", "Error. Out of range.\n", { 1,2 }, -1)
 		);
 	//! Accumulators
-	const unsigned int numAccumulators = std::ceil((static_cast<double>(numSolarPanels) * CalculationsUtility::AccumulatorToSolarPanelsRatio));
+	const unsigned int numAccumulators = static_cast<unsigned int>(std::ceil((static_cast<double>(numSolarPanels) * CalculationsUtility::AccumulatorToSolarPanelsRatio)));
 	
 	std::cout << "Number of Solar Panels = " << numSolarPanels << "\n";
 	std::cout << "Number of Accumulators = " << numAccumulators << "\n";

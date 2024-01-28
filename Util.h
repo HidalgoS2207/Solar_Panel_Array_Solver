@@ -48,7 +48,7 @@ namespace CalculationsUtility
 		template<typename T>
 		static void instantiateEntities(unsigned int numEntities, std::vector<T>& entities)
 		{
-			for (int i = 0; i < numEntities; i++)
+			for (unsigned int i = 0; i < numEntities; i++)
 			{
 				entities.emplace_back();
 			}

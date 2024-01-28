@@ -2,11 +2,40 @@
 
 void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(const Entities::ELECTRIC_POLE_TYPE prefferedElectricPoleType, const PolesArrangementMethod polesArrangementMethod, const unsigned int numPoles, unsigned int& effectiveArea)
 {
-	//This constant should allow to separate influence areas without the risk of leaving a one tile gap with no entities
-	const unsigned int maxGap = (Entities::SolarPanelSideNumTiles * 2) - 3;
-
 	unsigned int influenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType);
-	unsigned int wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType);
+	const double wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType);
 
+	unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType) + (Entities::maxGapBetweenPolesInflueceArea);
 
+	if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType))
+	{
+		maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType);
+	}
+
+	switch (polesArrangementMethod)
+	{
+	case CalculationsUtility::LINEAR:
+	{
+		for (unsigned int i = 0; i < numPoles; i++)
+		{
+			effectiveArea += ((maxDistance * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(prefferedElectricPoleType));
+		}
+	}
+	break;
+	case CalculationsUtility::RECTANGULAR:
+	{
+		const unsigned int squareOfPoles = static_cast<unsigned int>(std::ceil(std::sqrt(static_cast<double>(numPoles))));
+
+		for (unsigned int i = 0; i < squareOfPoles; i++)
+		{
+			for (unsigned int i = 0; i < squareOfPoles; i++)
+			{
+				effectiveArea += ((maxDistance * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(prefferedElectricPoleType));
+			}
+
+			effectiveArea += ((maxDistance - Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType));
+		}
+	}
+	break;
+	}
 }
