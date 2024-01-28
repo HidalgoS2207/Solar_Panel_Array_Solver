@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 namespace Entities
 {
@@ -11,6 +12,24 @@ namespace Entities
 		MEDIUM,
 		BIG,
 		SUBSTATION
+	};
+
+	static struct ElectricPoleInfluenceTilesByType
+	{
+	private:
+		static std::map<ELECTRIC_POLE_TYPE, unsigned int> createMap()
+		{
+			std::map<ELECTRIC_POLE_TYPE, unsigned int> auxMap;
+
+			auxMap[ELECTRIC_POLE_TYPE::SMALL] = 5;
+			auxMap[ELECTRIC_POLE_TYPE::MEDIUM] = 7;
+			auxMap[ELECTRIC_POLE_TYPE::BIG] = 4;
+			auxMap[ELECTRIC_POLE_TYPE::SUBSTATION] = 18;
+
+			return auxMap;
+		}
+	public:
+		static const std::map<ELECTRIC_POLE_TYPE, unsigned int> ElectricPoleInfluence;
 	};
 
 	class Entity

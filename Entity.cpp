@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence = Entities::ElectricPoleInfluenceTilesByType::createMap();
+
 Entities::Entity::Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position)
 	:
 	tiles(0),
@@ -67,7 +69,7 @@ int Entities::ElectricPole::getInfluenceArea()
 
 Entities::SmallElectricPole::SmallElectricPole()
 	:
-	ElectricPole({ true }, { 1,1 }, 5, 7.5, ELECTRIC_POLE_TYPE::SMALL)
+	ElectricPole({ true }, { 1,1 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SMALL), 7.5, ELECTRIC_POLE_TYPE::SMALL)
 {}
 
 Entities::SmallElectricPole::~SmallElectricPole()
@@ -75,7 +77,7 @@ Entities::SmallElectricPole::~SmallElectricPole()
 
 Entities::MediumElectricPole::MediumElectricPole()
 	:
-	ElectricPole({ true }, { 1,1 }, 7, 9.0, ELECTRIC_POLE_TYPE::MEDIUM)
+	ElectricPole({ true }, { 1,1 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM), 9.0, ELECTRIC_POLE_TYPE::MEDIUM)
 {}
 
 Entities::MediumElectricPole::~MediumElectricPole()
@@ -83,7 +85,7 @@ Entities::MediumElectricPole::~MediumElectricPole()
 
 Entities::BigElectricPole::BigElectricPole()
 	:
-	ElectricPole({ true,true,true,true }, { 2,2 }, 4, 30.0, ELECTRIC_POLE_TYPE::BIG)
+	ElectricPole({ true,true,true,true }, { 2,2 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG), 30.0, ELECTRIC_POLE_TYPE::BIG)
 {}
 
 Entities::BigElectricPole::~BigElectricPole()
@@ -91,7 +93,7 @@ Entities::BigElectricPole::~BigElectricPole()
 
 Entities::SubStation::SubStation()
 	:
-	ElectricPole({ true,true,true,true }, { 2,2 }, 18, 18.0, ELECTRIC_POLE_TYPE::SUBSTATION)
+	ElectricPole({ true,true,true,true }, { 2,2 }, ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SUBSTATION), 18.0, ELECTRIC_POLE_TYPE::SUBSTATION)
 {}
 
 Entities::SubStation::~SubStation()

@@ -4,29 +4,7 @@
 #include <iostream>
 
 #include "Entity.h"
-
-template<typename T>
-void instantiateEntities(unsigned int numEntities, std::vector<T>& entities)
-{
-	for (int i = 0; i < numEntities; i++)
-	{
-		entities.emplace_back();
-	}
-}
-
-template<typename T>
-unsigned int calculateOccupiedSurface(std::vector<T>& entities)
-{
-	unsigned int ret = 0;
-	for (T& entity : entities)
-	{
-		const std::pair<unsigned int, unsigned int>& tilesDist = entity.getTilesDistribution();
-
-		ret += (tilesDist.first * tilesDist.second);
-	}
-
-	return ret;
-}
+#include "Solver.h"
 
 int main(int argc, char* argv[])
 {
@@ -67,14 +45,17 @@ int main(int argc, char* argv[])
 	std::cout << "Number of Accumulators = " << numAccumulators << "\n";
 
 	std::vector<Entities::SolarPanel> solarPanels;
-	instantiateEntities(numSolarPanels, solarPanels);
-	const int totalOccupiedSurfaceSolarPanels = calculateOccupiedSurface(solarPanels);
+	Solver::instantiateEntities(numSolarPanels, solarPanels);
+	const int totalOccupiedSurfaceSolarPanels = Solver::calculateOccupiedSurface(solarPanels);
 	std::vector<Entities::Accumulator> accumulators;
-	instantiateEntities(numAccumulators, accumulators);
-	const int totalOccupiedSurfaceAccumulators = calculateOccupiedSurface(accumulators);
+	Solver::instantiateEntities(numAccumulators, accumulators);
+	const int totalOccupiedSurfaceAccumulators = Solver::calculateOccupiedSurface(accumulators);
 
 	//! Electrical active entities
 	const int totalOccupiedSurfaceActiveEntities = totalOccupiedSurfaceSolarPanels + totalOccupiedSurfaceAccumulators;
+
+	unsigned int numPolesRequired = 0;
+	Solver::calculateNumberOfPolesByEfectiveArea(totalOccupiedSurfaceActiveEntities, preferredElectricPoleType,numPolesRequired);
 
 	return 0;
 }
