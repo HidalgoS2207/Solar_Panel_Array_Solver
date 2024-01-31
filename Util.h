@@ -30,6 +30,16 @@ namespace IOUtil
 			return (ret + inputRangeOffset);
 		};
 	};
+
+	class Asserts
+	{
+	private:
+	public:
+		static inline void assertMessage(const char* msg)
+		{
+			std::cout << "\n" << msg << "\n";
+		}
+	};
 }
 
 namespace CalculationsUtility
@@ -38,8 +48,64 @@ namespace CalculationsUtility
 
 	enum PolesArrangementMethod
 	{
+		INVALID = -1,
 		LINEAR,
 		RECTANGULAR
+	};
+
+	enum EntitySpawnStrategy
+	{
+		INVALID = -1,
+		FULL_RANDOM,
+		WEIGHTED_RANDOM,
+		FULL_SEQUENTIAL,
+		WEIGHTED_SEQUENCIAL
+	};
+
+	enum EntityArrangementStrategy
+	{
+		INVALID = -1,
+		RADIAL_IN_FIRST,
+		RADIAL_OUT_FIRST,
+		LINEAR_HOR,
+		LINEAR_VER,
+		RANDOM,
+		ALTERNATE_VER,
+		ALTERNATE_HOR
+	};
+
+	struct SolverSettings
+	{
+	public:
+		SolverSettings()
+		{
+			initializeData();
+		}
+
+		void resetSettingsData()
+		{
+			initializeData();
+		}
+
+		PolesArrangementMethod polesArrangementMethod;
+		EntitySpawnStrategy entitiesSpawnStrategy;
+		EntityArrangementStrategy entitiesArrangementStrategy;
+		Entities::ELECTRIC_POLE_TYPE electricPoleType;
+		unsigned int numPoles;
+		unsigned int numSolarPanels;
+		unsigned int numAccumulators;
+
+	private:
+		void initializeData()
+		{
+			polesArrangementMethod = PolesArrangementMethod::INVALID;
+			entitiesSpawnStrategy = EntitySpawnStrategy::INVALID;
+			entitiesArrangementStrategy = EntityArrangementStrategy::INVALID;
+			electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID;
+			numPoles = 0;
+			numSolarPanels = 0;
+			numAccumulators = 0;
+		}
 	};
 
 	class Solver
@@ -68,7 +134,8 @@ namespace CalculationsUtility
 			return ret;
 		}
 
-		static void calculatePotentialMaxEffectiveArea(const Entities::ELECTRIC_POLE_TYPE prefferedElectricPoleType,const PolesArrangementMethod polesArrangementMethod, const unsigned int numPoles, unsigned int& effectiveArea);
+		static void calculatePotentialMaxEffectiveArea(SolverSettings& solverSettings, unsigned int& effectiveArea);
+		static void calculateArrangement(const SolverSettings solverSettings);
 	};
 }
 

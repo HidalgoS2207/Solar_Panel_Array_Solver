@@ -9,37 +9,41 @@
 
 int main(int argc, char* argv[])
 {
+	CalculationsUtility::SolverSettings solverSettings;
+
 	//! Solar Panels
-	const unsigned int numSolarPanels = IOUtil::KbdIO::userInputPrompt("\nNumber of solar panels required:\n>", "Error. Out of range.\n", { 1,999 }, 0);
+	solverSettings.numSolarPanels = IOUtil::KbdIO::userInputPrompt("\nNumber of solar panels required:\n>", "Error. Out of range.\n", { 1,999 }, 0);
 	//! Electric Poles preference
-	const Entities::ELECTRIC_POLE_TYPE prefferedElectricPoleType = static_cast<Entities::ELECTRIC_POLE_TYPE>(
+	solverSettings.electricPoleType = static_cast<Entities::ELECTRIC_POLE_TYPE>(
 		IOUtil::KbdIO::userInputPrompt("\nElectrical Pole type Preference:\n1.Small\n2.Medium\n3.Big\n4.Substation\n>", "Error. Out of range.\n", { static_cast<int>(Entities::ELECTRIC_POLE_TYPE::SMALL), static_cast<int>(Entities::ELECTRIC_POLE_TYPE::SUBSTATION) }, 0)
 		);
-	const unsigned int numPolesRequired = IOUtil::KbdIO::userInputPrompt("\nNumber of wanted Electric Poles:\n>", "Error. Out of range.\n", { 1,9999 }, 0);
+	solverSettings.numPoles = IOUtil::KbdIO::userInputPrompt("\nNumber of wanted Electric Poles:\n>", "Error. Out of range.\n", { 1,9999 }, 0);
 	//! Preferences Settings
-	const CalculationsUtility::PolesArrangementMethod polesArrangementMethod = static_cast<CalculationsUtility::PolesArrangementMethod>(
+	solverSettings.polesArrangementMethod = static_cast<CalculationsUtility::PolesArrangementMethod>(
 		IOUtil::KbdIO::userInputPrompt("\nPoles Arrangemnet Preffered Method:\n1.Linear\n2.Rectangular\n>", "Error. Out of range.\n", { 1,2 }, -1)
 		);
 	//! Accumulators
-	const unsigned int numAccumulators = static_cast<unsigned int>(std::ceil((static_cast<double>(numSolarPanels) * CalculationsUtility::AccumulatorToSolarPanelsRatio)));
+	solverSettings.numAccumulators = static_cast<unsigned int>(std::ceil((static_cast<double>(solverSettings.numSolarPanels) * CalculationsUtility::AccumulatorToSolarPanelsRatio)));
 	
-	std::cout << "Number of Solar Panels = " << numSolarPanels << "\n";
-	std::cout << "Number of Accumulators = " << numAccumulators << "\n";
+	std::cout << "Number of Solar Panels = " << solverSettings.numSolarPanels << "\n";
+	std::cout << "Number of Accumulators = " << solverSettings.numAccumulators << "\n";
 
 	std::vector<Entities::SolarPanel> solarPanels;
-	CalculationsUtility::Solver::instantiateEntities(numSolarPanels, solarPanels);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numSolarPanels, solarPanels);
 	const int totalOccupiedSurfaceSolarPanels = CalculationsUtility::Solver::calculateOccupiedSurface(solarPanels);
 	std::vector<Entities::Accumulator> accumulators;
-	CalculationsUtility::Solver::instantiateEntities(numAccumulators, accumulators);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators);
 	const int totalOccupiedSurfaceAccumulators = CalculationsUtility::Solver::calculateOccupiedSurface(accumulators);
 
 	//! Electrical active entities
 	const int totalOccupiedSurfaceActiveEntities = totalOccupiedSurfaceSolarPanels + totalOccupiedSurfaceAccumulators;
 	
 	unsigned int effectiveArea = 0;
-	CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(prefferedElectricPoleType, polesArrangementMethod,numPolesRequired,effectiveArea);
+	CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(solverSettings,effectiveArea);
+	if (effectiveArea < totalOccupiedSurfaceActiveEntities) { IOUtil::Asserts::assertMessage("Not available active surface to hold the components"); }
 
-	std::cout << "Efective Area : " << effectiveArea << "\n";
+	solverSettings.entitiesArrangementStrategy = CalculationsUtility::EntityArrangementStrategy::RANDOM;
+	solverSettings.entitiesSpawnStrategy = CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM;
 
 	return 0;
 }

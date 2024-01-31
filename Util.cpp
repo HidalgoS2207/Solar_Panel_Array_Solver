@@ -1,41 +1,41 @@
 #include "Util.h"
 
-void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(const Entities::ELECTRIC_POLE_TYPE prefferedElectricPoleType, const PolesArrangementMethod polesArrangementMethod, const unsigned int numPoles, unsigned int& effectiveArea)
+void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(SolverSettings& solverSettings, unsigned int& effectiveArea)
 {
-	unsigned int influenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType);
-	const double wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType);
+	const unsigned int influenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType);
+	const double wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType);
 
-	unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType) + (Entities::maxGapBetweenPolesInflueceArea);
+	unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType) + (Entities::maxGapBetweenPolesInflueceArea);
 
-	if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType))
+	if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType))
 	{
-		maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(prefferedElectricPoleType);
+		maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType);
 	}
 
-	switch (polesArrangementMethod)
+	switch (solverSettings.polesArrangementMethod)
 	{
 	case CalculationsUtility::LINEAR:
 	{
-		for (unsigned int i = 0; i < numPoles; i++)
+		for (unsigned int i = 0; i < solverSettings.numPoles; i++)
 		{
-			effectiveArea += ((maxDistance * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(prefferedElectricPoleType));
+			effectiveArea += ((maxDistance * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(solverSettings.electricPoleType));
 		}
 	}
 	break;
 	case CalculationsUtility::RECTANGULAR:
 	{
-		const unsigned int squareOfPoles = static_cast<unsigned int>(std::ceil(std::sqrt(static_cast<double>(numPoles))));
+		const unsigned int squareOfPoles = static_cast<unsigned int>(std::ceil(std::sqrt(static_cast<double>(solverSettings.numPoles))));
 
-		for (unsigned int i = 0; i < squareOfPoles; i++)
-		{
-			for (unsigned int i = 0; i < squareOfPoles; i++)
-			{
-				effectiveArea += ((maxDistance * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(prefferedElectricPoleType));
-			}
-
-			effectiveArea += ((maxDistance - Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType)) * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(prefferedElectricPoleType));
-		}
+		effectiveArea = (std::pow(influenceTiles, 2) - Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(solverSettings.electricPoleType)) * std::pow(squareOfPoles, 2);
+		effectiveArea += (((maxDistance - influenceTiles) * influenceTiles) * (squareOfPoles - 1)) * (squareOfPoles);
+		const unsigned int totalSideDistance = (squareOfPoles * influenceTiles) + ((squareOfPoles - 1) * (maxDistance - influenceTiles));
+		effectiveArea += (totalSideDistance * (maxDistance - influenceTiles) * (squareOfPoles - 1));
 	}
 	break;
 	}
+}
+
+void CalculationsUtility::Solver::calculateArrangement(const SolverSettings solverSettings)
+{
+
 }
