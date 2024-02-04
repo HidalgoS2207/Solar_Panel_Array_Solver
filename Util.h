@@ -3,8 +3,9 @@
 #include "Entity.h"
 
 #include <iostream>
-#include <vector>
 #include <math.h>
+#include <stdarg.h>
+#include <vector>
 
 namespace IOUtil
 {
@@ -34,6 +35,14 @@ namespace IOUtil
 	class Asserts
 	{
 	private:
+		enum class FORMATTED_TYPES
+		{
+			INVALID = -1,
+			INTEGER,
+			FLOAT,
+			CHAR,
+			STRING
+		};
 	public:
 		static inline void assertMessage(const bool condition, const char* msg)
 		{
@@ -41,6 +50,72 @@ namespace IOUtil
 			{
 				std::cout << "\n" << msg << "\n";
 			}
+		}
+
+		//! Print formatted message in console output [%d = integer | %f = float | %s = string | %c = character]
+		static inline void assertMessageFormatted(const bool condition, const char* msg, ...)
+		{
+			std::cout << "\n";
+
+			va_list args;
+			va_start(args, msg);
+
+			auto identyType = [&](const char* strPos)
+				{
+					switch (*strPos)
+					{
+					case 'd':
+						std::cout << va_arg(args, int);
+						break;
+					case 'f':
+						std::cout << va_arg(args, float);
+						break;
+					case 'c':
+						std::cout << va_arg(args, char);
+						break;
+					case 's':
+						std::cout << va_arg(args, char*);
+						break;
+					default:
+						break;
+					}
+				};
+
+			auto identifyArg = [](const char* strPos) -> bool
+				{
+					if (*(strPos + 1) != '\0')
+					{
+						bool ret = (*(strPos + 1) == 'd') || (*(strPos + 1) == 'f') || (*(strPos + 1) == 's') || (*(strPos + 1) == 'c');
+						return ret;
+					}
+
+					return false;
+				};
+
+			while (*msg != '\0')
+			{
+				if (*msg == '%')
+				{
+					if (identifyArg(msg))
+					{
+						msg++;
+						identyType(msg);
+					}
+					else
+					{
+						std::cout << *msg;
+					}
+				}
+				else
+				{
+					std::cout << *msg;
+				}
+				msg++;
+			}
+
+			va_end(args);
+
+			std::cout << "\n";
 		}
 	};
 }
@@ -137,8 +212,8 @@ namespace CalculationsUtility
 			return ret;
 		}
 
-		static void calculatePotentialMaxEffectiveArea(SolverSettings& solverSettings, unsigned int& effectiveArea);
-		static void calculateArrangement(const SolverSettings solverSettings);
+		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
+		static void calculateArrangement(const SolverSettings& solverSettings);
 	};
 }
 

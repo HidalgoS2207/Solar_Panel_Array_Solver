@@ -1,7 +1,9 @@
 #include "Util.h"
 
-void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(SolverSettings& solverSettings, unsigned int& effectiveArea)
+unsigned int CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea)
 {
+	unsigned int modNumPoles = solverSettings.numPoles;
+
 	const unsigned int influenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType);
 	const double wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType);
 
@@ -30,12 +32,16 @@ void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(SolverSetti
 		effectiveArea += (((maxDistance - influenceTiles) * influenceTiles) * (squareOfPoles - 1)) * (squareOfPoles);
 		const unsigned int totalSideDistance = (squareOfPoles * influenceTiles) + ((squareOfPoles - 1) * (maxDistance - influenceTiles));
 		effectiveArea += (totalSideDistance * (maxDistance - influenceTiles) * (squareOfPoles - 1));
+
+		modNumPoles = std::pow(squareOfPoles, 2);
 	}
 	break;
 	}
+
+	return modNumPoles;
 }
 
-void CalculationsUtility::Solver::calculateArrangement(const SolverSettings solverSettings)
+void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings)
 {
 
 }
