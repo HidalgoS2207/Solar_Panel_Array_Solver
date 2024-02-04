@@ -34,13 +34,16 @@ int main(int argc, char* argv[])
 	std::vector<Entities::Accumulator> accumulators;
 	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators);
 	const int totalOccupiedSurfaceAccumulators = CalculationsUtility::Solver::calculateOccupiedSurface(accumulators);
+	std::vector<Entities::ElectricPole*> electricPoles;
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators);
+	const int totalOccupiedSurfaceAccumulators = CalculationsUtility::Solver::calculateOccupiedSurface(accumulators);
 
 	//! Electrical active entities
-	const int totalOccupiedSurfaceActiveEntities = totalOccupiedSurfaceSolarPanels + totalOccupiedSurfaceAccumulators;
+	const unsigned int totalOccupiedSurfaceActiveEntities = totalOccupiedSurfaceSolarPanels + totalOccupiedSurfaceAccumulators;
 	
 	unsigned int effectiveArea = 0;
 	CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(solverSettings,effectiveArea);
-	if (effectiveArea < totalOccupiedSurfaceActiveEntities) { IOUtil::Asserts::assertMessage("Not available active surface to hold the components"); }
+	IOUtil::Asserts::assertMessage((effectiveArea >= totalOccupiedSurfaceActiveEntities), "Not available active surface to hold the components");
 
 	solverSettings.entitiesArrangementStrategy = CalculationsUtility::EntityArrangementStrategy::RANDOM;
 	solverSettings.entitiesSpawnStrategy = CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM;

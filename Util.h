@@ -35,9 +35,12 @@ namespace IOUtil
 	{
 	private:
 	public:
-		static inline void assertMessage(const char* msg)
+		static inline void assertMessage(const bool condition, const char* msg)
 		{
-			std::cout << "\n" << msg << "\n";
+			if (!condition)
+			{
+				std::cout << "\n" << msg << "\n";
+			}
 		}
 	};
 }
@@ -46,14 +49,14 @@ namespace CalculationsUtility
 {
 	const double AccumulatorToSolarPanelsRatio = 0.84;
 
-	enum PolesArrangementMethod
+	enum class PolesArrangementMethod
 	{
 		INVALID = -1,
 		LINEAR,
 		RECTANGULAR
 	};
 
-	enum EntitySpawnStrategy
+	enum class EntitySpawnStrategy
 	{
 		INVALID = -1,
 		FULL_RANDOM,
@@ -62,7 +65,7 @@ namespace CalculationsUtility
 		WEIGHTED_SEQUENCIAL
 	};
 
-	enum EntityArrangementStrategy
+	enum class EntityArrangementStrategy
 	{
 		INVALID = -1,
 		RADIAL_IN_FIRST,

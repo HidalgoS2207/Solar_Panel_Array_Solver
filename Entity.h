@@ -11,6 +11,13 @@ namespace Entities
 	//This constant should allow to separate influence areas without the risk of leaving a one tile gap with no entities
 	const unsigned int maxGapBetweenPolesInflueceArea = (SolarPanelSideNumTiles);
 
+	enum class ENTITY_TYPE
+	{
+		SOLAR_PANEL,
+		ACCUMULATOR,
+		ELECTRIC_POLE
+	};
+
 	enum ELECTRIC_POLE_TYPE
 	{
 		INVALID = 0,
@@ -84,12 +91,14 @@ namespace Entities
 
 		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
 	protected:
-		Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position);
+		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType);
 
 		unsigned int tiles;
 		std::vector<bool> tilesDistMap;
 		std::pair<unsigned int, unsigned int> tilesDistribution;
 		std::pair<unsigned int, unsigned int> position;
+
+		const ENTITY_TYPE entityType;
 	};
 
 	class SolarPanel : public Entity

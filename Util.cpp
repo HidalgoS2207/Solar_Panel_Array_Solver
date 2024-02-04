@@ -14,7 +14,7 @@ void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(SolverSetti
 
 	switch (solverSettings.polesArrangementMethod)
 	{
-	case CalculationsUtility::LINEAR:
+	case CalculationsUtility::PolesArrangementMethod::LINEAR:
 	{
 		for (unsigned int i = 0; i < solverSettings.numPoles; i++)
 		{
@@ -22,7 +22,7 @@ void CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(SolverSetti
 		}
 	}
 	break;
-	case CalculationsUtility::RECTANGULAR:
+	case CalculationsUtility::PolesArrangementMethod::RECTANGULAR:
 	{
 		const unsigned int squareOfPoles = static_cast<unsigned int>(std::ceil(std::sqrt(static_cast<double>(solverSettings.numPoles))));
 

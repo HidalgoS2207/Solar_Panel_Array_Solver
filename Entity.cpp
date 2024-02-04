@@ -4,10 +4,12 @@ const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPol
 const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied = Entities::ElectricPoleAreaOccupiedByType::createMap();
 const std::map<Entities::ELECTRIC_POLE_TYPE, double> Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance = Entities::ElectricPoleWireTilesDistanceByType::createMap();
 
-Entities::Entity::Entity(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position)
+Entities::Entity::Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType)
 	:
 	tiles(0),
-	tilesDistribution(tilesDistribution)
+	tilesDistribution(tilesDistribution),
+	position(position),
+	entityType(entityType)
 {
 	tilesDistMap = tilesMap;
 	for (bool tilesDistMapElem : tilesDistMap)
@@ -36,7 +38,7 @@ void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosi
 
 Entities::SolarPanel::SolarPanel()
 	:
-	Entity({ true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 })
+	Entity({ true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 }, ENTITY_TYPE::SOLAR_PANEL)
 {}
 
 Entities::SolarPanel::~SolarPanel()
@@ -44,7 +46,7 @@ Entities::SolarPanel::~SolarPanel()
 
 Entities::ElectricPole::ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType)
 	:
-	Entity(tilesMap, tilesDistribution, { 0,0 }),
+	Entity(tilesMap, tilesDistribution, { 0,0 }, ENTITY_TYPE::ELECTRIC_POLE),
 	influenceTiles(influenceTiles),
 	wireTilesDistance(wireTilesDistance),
 	electricPoleType(electricPoleType)
@@ -89,7 +91,7 @@ Entities::MediumElectricPole::MediumElectricPole()
 	(
 		{ true },
 		{ 1,1 },
-		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM), 
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::MEDIUM),
 		ELECTRIC_POLE_TYPE::MEDIUM
 	)
@@ -103,8 +105,8 @@ Entities::BigElectricPole::BigElectricPole()
 	ElectricPole
 	(
 		{ true,true,true,true },
-		{ 2,2 }, 
-		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG), 
+		{ 2,2 },
+		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::BIG),
 		ELECTRIC_POLE_TYPE::BIG
 	)
@@ -117,8 +119,8 @@ Entities::SubStation::SubStation()
 	:
 	ElectricPole
 	(
-		{ true,true,true,true }, 
-		{ 2,2 }, 
+		{ true,true,true,true },
+		{ 2,2 },
 		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SUBSTATION),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::SUBSTATION),
 		ELECTRIC_POLE_TYPE::SUBSTATION
@@ -130,7 +132,7 @@ Entities::SubStation::~SubStation()
 
 Entities::Accumulator::Accumulator()
 	:
-	Entity({ true,true,true,true }, { AccumulatorSideNumTiles,AccumulatorSideNumTiles }, { 0,0 })
+	Entity({ true,true,true,true }, { AccumulatorSideNumTiles,AccumulatorSideNumTiles }, { 0,0 }, ENTITY_TYPE::ACCUMULATOR)
 {}
 
 Entities::Accumulator::~Accumulator()

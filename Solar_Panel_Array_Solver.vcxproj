@@ -129,11 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ActiveSurfaceMap.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ActiveSurfaceMap.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
