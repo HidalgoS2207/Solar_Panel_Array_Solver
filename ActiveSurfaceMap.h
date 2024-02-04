@@ -2,8 +2,8 @@
 
 #include "Entity.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class ActiveSurfaceMap
 {
@@ -13,10 +13,12 @@ private:
 		Tile(const std::pair<unsigned int, unsigned int> coordinates)
 			:
 			coordinates(coordinates),
-			entity(nullptr)
+			entity(nullptr),
+			isElectrified(false)
 		{}
 
 		const std::pair<unsigned int, unsigned int> coordinates;
+		const bool isElectrified;
 		Entities::Entity* entity;
 	};
 public:

@@ -20,8 +20,8 @@ namespace Entities
 
 	enum ELECTRIC_POLE_TYPE
 	{
-		INVALID = 0,
-		SMALL = 1,
+		INVALID = -1,
+		SMALL = 0,
 		MEDIUM,
 		BIG,
 		SUBSTATION

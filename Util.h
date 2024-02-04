@@ -16,6 +16,7 @@ namespace IOUtil
 	public:
 		static inline int userInputPrompt(const char* promptText, const char* errorText, const std::pair<int, int> inputRange, int inputRangeOffset)
 		{
+			//! First loop always false
 			int ret = inputRange.first - 1;
 
 			while (!verifyInputRange(inputRange.first, inputRange.second, ret))
@@ -29,6 +30,39 @@ namespace IOUtil
 			}
 
 			return (ret + inputRangeOffset);
+		};
+
+		static inline int userInputPrompt(const char* prompTitle,const std::vector<std::string> userOptions, const char* errorText, const std::pair<int, int> inputRange)
+		{
+			auto printUserOptions = [&]()
+				{
+					std::cout << "\n";
+
+					for (int i = 0; i < userOptions.size(); i++)
+					{
+						std::cout << (i + 1) << ". " << userOptions[i] <<"\n";
+					}
+
+					std::cout << "> ";
+				};
+
+			const int offSet = inputRange.first - 1;
+
+			//! First loop always false
+			int ret = inputRange.first - offSet - 1;
+
+			while (!verifyInputRange(inputRange.first - offSet, inputRange.second - offSet, ret))
+			{
+				std::cout << "\n" << prompTitle;
+				printUserOptions();
+				std::cin >> ret;
+				if (!verifyInputRange(inputRange.first - offSet, inputRange.second - offSet, ret))
+				{
+					std::cout << errorText;
+				}
+			}
+
+			return (ret + offSet);
 		};
 	};
 
@@ -198,6 +232,54 @@ namespace CalculationsUtility
 			}
 		}
 
+		static void instantiateEntities(const unsigned int numEntities, std::vector<Entities::ElectricPole*>& electricPoles, const Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		{
+			auto allocateElectricPoleByType = [](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> Entities::ElectricPole*
+				{
+					switch (electricPoleType)
+					{
+					case Entities::ELECTRIC_POLE_TYPE::SMALL:
+					{
+						Entities::ElectricPole* electricPole = new Entities::SmallElectricPole();
+						return electricPole;
+					}
+					case Entities::ELECTRIC_POLE_TYPE::MEDIUM:
+					{
+						Entities::ElectricPole* electricPole = new Entities::MediumElectricPole();
+						return electricPole;
+					}
+					case Entities::ELECTRIC_POLE_TYPE::BIG:
+					{
+						Entities::ElectricPole* electricPole = new Entities::BigElectricPole();
+						return electricPole;
+					}
+					case Entities::ELECTRIC_POLE_TYPE::SUBSTATION:
+					{
+						Entities::ElectricPole* electricPole = new Entities::SubStation();
+						return electricPole;
+					}
+					default:
+						IOUtil::Asserts::assertMessageFormatted(false, "Cannot initialize Electric Pole Instance of type Id: %d", electricPoleType);
+						break;
+					}
+
+					return nullptr;
+				};
+
+			for (unsigned int i = 0; i < numEntities; i++)
+			{
+				electricPoles.push_back(allocateElectricPoleByType(electricPoleType));
+			}
+		}
+
+		static void destroyEntities(std::vector<Entities::ElectricPole*>& electricPoles)
+		{
+			for (auto& electricPole : electricPoles)
+			{
+				delete electricPole;
+			}
+		}
+
 		template<typename T>
 		static unsigned int calculateOccupiedSurface(std::vector<T>& entities)
 		{
@@ -213,7 +295,7 @@ namespace CalculationsUtility
 		}
 
 		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
-		static void calculateArrangement(const SolverSettings& solverSettings);
+		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
 	};
 }
 

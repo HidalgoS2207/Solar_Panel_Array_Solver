@@ -14,8 +14,7 @@ ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> t
 }
 
 ActiveSurfaceMap::~ActiveSurfaceMap()
-{
-}
+{}
 
 void ActiveSurfaceMap::insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor)
 {

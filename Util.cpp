@@ -41,7 +41,7 @@ unsigned int CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(con
 	return modNumPoles;
 }
 
-void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings)
+void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
-
+	
 }
