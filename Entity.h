@@ -9,7 +9,7 @@ namespace Entities
 	const unsigned int AccumulatorSideNumTiles = 2;
 
 	//This constant should allow to separate influence areas without the risk of leaving a one tile gap with no entities
-	const unsigned int maxGapBetweenPolesInflueceArea = (SolarPanelSideNumTiles);
+	const unsigned int maxGapBetweenPolesInfluenceArea = (SolarPanelSideNumTiles);
 
 	enum class ENTITY_TYPE
 	{

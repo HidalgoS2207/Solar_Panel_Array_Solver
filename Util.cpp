@@ -6,13 +6,7 @@ unsigned int CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(con
 
 	const unsigned int influenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType);
 	const double wireDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType);
-
-	unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType) + (Entities::maxGapBetweenPolesInflueceArea);
-
-	if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType))
-	{
-		maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(solverSettings.electricPoleType);
-	}
+	const unsigned int maxDistance = calculateMaxDistanceBetweenPoles(solverSettings.electricPoleType);
 
 	switch (solverSettings.polesArrangementMethod)
 	{
@@ -36,12 +30,43 @@ unsigned int CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(con
 		modNumPoles = std::pow(squareOfPoles, 2);
 	}
 	break;
+	default:
+		IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea - Invalid pole arrangement method = %d", solverSettings.polesArrangementMethod);
 	}
 
 	return modNumPoles;
 }
 
+std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSidesSize(const SolverSettings& solverSettings)
+{
+	std::pair<unsigned int, unsigned int> ret{ 0,0 };
+
+	const unsigned int maxDistance = calculateMaxDistanceBetweenPoles(solverSettings.electricPoleType);
+
+	switch (solverSettings.polesArrangementMethod)
+	{
+	case CalculationsUtility::PolesArrangementMethod::LINEAR:
+		ret.first = (solverSettings.numPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((solverSettings.numPoles - 1) * Entities::maxGapBetweenPolesInfluenceArea);
+		ret.second = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType);
+		break;
+	case CalculationsUtility::PolesArrangementMethod::RECTANGULAR:
+	{
+		const unsigned int squareOfPoles = static_cast<unsigned int>(std::sqrt(static_cast<double>(solverSettings.numPoles)));
+		ret.first = (squareOfPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((squareOfPoles - 1) * Entities::maxGapBetweenPolesInfluenceArea);
+		ret.second = ret.first;
+		break;
+	}
+	default:
+		IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateSidesSize - Invalid pole arrangement method = %d", solverSettings.polesArrangementMethod);
+	}
+
+	IOUtil::Asserts::assertMessageFormatted((ret.first != 0 && ret.second != 0), "CalculationsUtility::Solver::calculateSidesSize - Invalid size result : X = %d | Y = %d", ret.first, ret.second);
+	return ret;
+}
+
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
-	
+	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
+
+	activeSurfaceMap.printSurface();
 }

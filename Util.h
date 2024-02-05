@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "ActiveSurfaceMap.h"
 
 #include <iostream>
 #include <math.h>
@@ -89,67 +90,71 @@ namespace IOUtil
 		//! Print formatted message in console output [%d = integer | %f = float | %s = string | %c = character]
 		static inline void assertMessageFormatted(const bool condition, const char* msg, ...)
 		{
-			std::cout << "\n";
-
-			va_list args;
-			va_start(args, msg);
-
-			auto identyType = [&](const char* strPos)
-				{
-					switch (*strPos)
-					{
-					case 'd':
-						std::cout << va_arg(args, int);
-						break;
-					case 'f':
-						std::cout << va_arg(args, float);
-						break;
-					case 'c':
-						std::cout << va_arg(args, char);
-						break;
-					case 's':
-						std::cout << va_arg(args, char*);
-						break;
-					default:
-						break;
-					}
-				};
-
-			auto identifyArg = [](const char* strPos) -> bool
-				{
-					if (*(strPos + 1) != '\0')
-					{
-						bool ret = (*(strPos + 1) == 'd') || (*(strPos + 1) == 'f') || (*(strPos + 1) == 's') || (*(strPos + 1) == 'c');
-						return ret;
-					}
-
-					return false;
-				};
-
-			while (*msg != '\0')
+			if (!condition)
 			{
-				if (*msg == '%')
-				{
-					if (identifyArg(msg))
+				std::cout << "\n";
+
+				va_list args;
+				va_start(args, msg);
+
+				auto identyType = [&](const char* strPos)
 					{
-						msg++;
-						identyType(msg);
+						switch (*strPos)
+						{
+						case 'd':
+							std::cout << va_arg(args, int);
+							break;
+						case 'f':
+							std::cout << va_arg(args, float);
+							break;
+						case 'c':
+							std::cout << va_arg(args, char);
+							break;
+						case 's':
+							std::cout << va_arg(args, char*);
+							break;
+						default:
+							break;
+						}
+					};
+
+				auto identifyArg = [](const char* strPos) -> bool
+					{
+						if (*(strPos + 1) != '\0')
+						{
+							bool ret = (*(strPos + 1) == 'd') || (*(strPos + 1) == 'f') || (*(strPos + 1) == 's') || (*(strPos + 1) == 'c');
+							return ret;
+						}
+
+						return false;
+					};
+
+				while (*msg != '\0')
+				{
+					if (*msg == '%')
+					{
+						if (identifyArg(msg))
+						{
+							msg++;
+							identyType(msg);
+						}
+						else
+						{
+							std::cout << *msg;
+						}
 					}
 					else
 					{
 						std::cout << *msg;
 					}
+					msg++;
 				}
-				else
-				{
-					std::cout << *msg;
-				}
-				msg++;
+
+				va_end(args);
+
+				std::cout << "\n";
 			}
 
-			va_end(args);
-
-			std::cout << "\n";
 		}
 	};
 }
@@ -222,6 +227,18 @@ namespace CalculationsUtility
 
 	class Solver
 	{
+	private:
+		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		{
+			unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType) + (Entities::maxGapBetweenPolesInfluenceArea);
+
+			if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType))
+			{
+				maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType);
+			}
+
+			return maxDistance;
+		}
 	public:
 		template<typename T>
 		static void instantiateEntities(unsigned int numEntities, std::vector<T>& entities)
@@ -295,6 +312,7 @@ namespace CalculationsUtility
 		}
 
 		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
+		static std::pair<unsigned int, unsigned int> calculateSidesSize(const SolverSettings& solverSettings);
 		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
 	};
 }
