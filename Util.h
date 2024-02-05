@@ -122,8 +122,7 @@ namespace IOUtil
 					{
 						if (*(strPos + 1) != '\0')
 						{
-							bool ret = (*(strPos + 1) == 'd') || (*(strPos + 1) == 'f') || (*(strPos + 1) == 's') || (*(strPos + 1) == 'c');
-							return ret;
+							return ((*(strPos + 1) == 'd') || (*(strPos + 1) == 'f') || (*(strPos + 1) == 's') || (*(strPos + 1) == 'c'));
 						}
 
 						return false;
@@ -276,7 +275,7 @@ namespace CalculationsUtility
 						return electricPole;
 					}
 					default:
-						IOUtil::Asserts::assertMessageFormatted(false, "Cannot initialize Electric Pole Instance of type Id: %d", electricPoleType);
+						IOUtil::Asserts::assertMessageFormatted(false, "instantiateEntities - Cannot initialize Electric Pole Instance of type Id: %d", electricPoleType);
 						break;
 					}
 

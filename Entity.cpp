@@ -31,6 +31,11 @@ const std::pair<unsigned int, unsigned int>& Entities::Entity::getPosition() con
 	return position;
 }
 
+Entities::ENTITY_TYPE Entities::Entity::getEntityType() const
+{
+	return entityType;
+}
+
 void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosition)
 {
 	position = newPosition;
@@ -69,6 +74,11 @@ double Entities::ElectricPole::getWireTilesDistance()
 int Entities::ElectricPole::getInfluenceArea()
 {
 	return (influenceTiles * influenceTiles) - (tilesDistribution.first * tilesDistribution.second);
+}
+
+Entities::ELECTRIC_POLE_TYPE Entities::ElectricPole::getElectricPoleType()
+{
+	return electricPoleType;
 }
 
 Entities::SmallElectricPole::SmallElectricPole()

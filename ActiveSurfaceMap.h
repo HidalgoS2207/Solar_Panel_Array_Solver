@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Entity.h"
+#include "Util.h"
 
 #include <iostream>
 #include <string>
 #include <vector>
+#include <math.h>
 
 namespace TilesMapping
 {
@@ -58,6 +60,7 @@ namespace TilesMapping
 		~ActiveSurfaceMap();
 
 		void insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor);
+		void insertElectricPoles(const std::vector<Entities::ElectricPole*>& electricPoles);
 		void printSurface();
 	private:
 		std::vector<Tile> tiles;

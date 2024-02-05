@@ -26,6 +26,28 @@ void TilesMapping::ActiveSurfaceMap::insertEntity(const Entities::Entity* entity
 	
 }
 
+void TilesMapping::ActiveSurfaceMap::insertElectricPoles(const std::vector<Entities::ElectricPole*>& electricPoles)
+{
+	//! Rigth now all electric poles are uniform and the system doesn't manage combination of different ones
+	//! It is safe to extract the type from the first element of the array
+	IOUtil::Asserts::assertMessage(electricPoles.size(), "TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric Poles Array is empty!");
+	Entities::ELECTRIC_POLE_TYPE electricPoleType = electricPoles.front()->getElectricPoleType();
+
+	const unsigned int electricPoleOccupiedArea = Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(electricPoleType);
+	const unsigned int electricPoleSideSize = static_cast<unsigned int>(std::sqrt(electricPoleOccupiedArea));
+	const unsigned int electricPoleInfluenceTiles = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType);
+
+	unsigned int posX = 0;
+	unsigned int posY = 0;
+
+	const unsigned int tilesStartOffset = ((electricPoleInfluenceTiles - electricPoleSideSize) / 2);
+
+	for (auto& electricPole : electricPoles)
+	{
+
+	}
+}
+
 void TilesMapping::ActiveSurfaceMap::printSurface()
 {
 	std::cout << "\n\n Current Surface: \n\n";
@@ -38,6 +60,10 @@ void TilesMapping::ActiveSurfaceMap::printSurface()
 		{
 			if(tile.isElectrified) { std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::EMPTY_ELECTRIFIED_SPACE); }
 			else { std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::EMPTY_SPACE); }
+		}
+		else
+		{
+
 		}
 
 		idx++;
