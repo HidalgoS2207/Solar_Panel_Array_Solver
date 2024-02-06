@@ -52,9 +52,11 @@ namespace TilesMapping
 			{}
 
 			const std::pair<unsigned int, unsigned int> coordinates;
-			const bool isElectrified;
+			bool isElectrified;
 			Entities::Entity* entity;
 		};
+
+		Tile* getTileByPosition(std::pair<unsigned int, unsigned int>coordinates);
 	public:
 		ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize);
 		~ActiveSurfaceMap();

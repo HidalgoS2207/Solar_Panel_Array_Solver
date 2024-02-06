@@ -227,6 +227,7 @@ namespace CalculationsUtility
 	class Solver
 	{
 	private:
+	public:
 		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType)
 		{
 			unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType) + (Entities::maxGapBetweenPolesInfluenceArea);
@@ -238,7 +239,7 @@ namespace CalculationsUtility
 
 			return maxDistance;
 		}
-	public:
+
 		template<typename T>
 		static void instantiateEntities(unsigned int numEntities, std::vector<T>& entities)
 		{

@@ -46,13 +46,13 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 	switch (solverSettings.polesArrangementMethod)
 	{
 	case CalculationsUtility::PolesArrangementMethod::LINEAR:
-		ret.first = (solverSettings.numPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((solverSettings.numPoles - 1) * Entities::maxGapBetweenPolesInfluenceArea);
+		ret.first = (solverSettings.numPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((solverSettings.numPoles - 1) * maxDistance);
 		ret.second = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType);
 		break;
 	case CalculationsUtility::PolesArrangementMethod::RECTANGULAR:
 	{
 		const unsigned int squareOfPoles = static_cast<unsigned int>(std::sqrt(static_cast<double>(solverSettings.numPoles)));
-		ret.first = (squareOfPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((squareOfPoles - 1) * Entities::maxGapBetweenPolesInfluenceArea);
+		ret.first = (squareOfPoles * Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType)) + ((squareOfPoles - 1) * maxDistance);
 		ret.second = ret.first;
 		break;
 	}
@@ -67,6 +67,7 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
+	activeSurfaceMap.insertElectricPoles(electricPoles);
 
 	activeSurfaceMap.printSurface();
 }
