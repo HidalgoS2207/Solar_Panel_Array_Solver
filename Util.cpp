@@ -44,7 +44,7 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 	const unsigned int maxDistance = calculateMaxDistanceBetweenPoles(solverSettings.electricPoleType);
 	const unsigned int electricPoleOccupiedArea = Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(solverSettings.electricPoleType);
 	const unsigned int electricPoleSideSize = static_cast<unsigned int>(std::sqrt(electricPoleOccupiedArea));
-	const unsigned int gapBetweenElectrifiedAreas = (maxDistance - 1) - (((Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(solverSettings.electricPoleType) - electricPoleSideSize)));
+	const unsigned int gapBetweenElectrifiedAreas = calculateGapBetweenElectrifiedAreas(solverSettings.electricPoleType);
 
 	switch (solverSettings.polesArrangementMethod)
 	{

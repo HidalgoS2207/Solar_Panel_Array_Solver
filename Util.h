@@ -227,17 +227,33 @@ namespace CalculationsUtility
 	class Solver
 	{
 	private:
-	public:
-		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType, unsigned int& gapBetweenElectrifiedAreas)
 		{
-			unsigned int maxDistance = (Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType) - 1) + (Entities::maxGapBetweenPolesInfluenceArea);
+			gapBetweenElectrifiedAreas = (Entities::maxGapBetweenPolesInfluenceArea);
 
-			if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType))
+			unsigned int maxDistance = static_cast<int>((Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType))) + (Entities::maxGapBetweenPolesInfluenceArea);
+
+			while (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType))
 			{
-				maxDistance = Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType);
+				//Reduce by 1 until we reach the maximum possible distance
+				maxDistance--;
+				gapBetweenElectrifiedAreas--;
 			}
 
 			return maxDistance;
+		}
+	public:
+		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		{
+			unsigned int gapBetweenElectrifiedAreasIgnoreByRef = 0;
+			return calculateMaxDistanceBetweenPoles(electricPoleType, gapBetweenElectrifiedAreasIgnoreByRef);
+		}
+
+		static inline unsigned int calculateGapBetweenElectrifiedAreas(Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		{
+			unsigned int gapBetweenElectrifiedAreas = 0;
+			calculateMaxDistanceBetweenPoles(electricPoleType, gapBetweenElectrifiedAreas);
+			return gapBetweenElectrifiedAreas;
 		}
 
 		template<typename T>

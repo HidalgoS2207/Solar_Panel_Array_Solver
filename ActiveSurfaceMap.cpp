@@ -40,7 +40,7 @@ void TilesMapping::ActiveSurfaceMap::insertEntity(const Entities::Entity* entity
 
 }
 
-void TilesMapping::ActiveSurfaceMap::insertElectricPoles(const std::vector<Entities::ElectricPole*>& electricPoles)
+void TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles)
 {
 	//! Rigth now all electric poles are uniform and the system doesn't manage combination of different ones
 	//! It is safe to extract the type from the first element of the array
@@ -56,6 +56,43 @@ void TilesMapping::ActiveSurfaceMap::insertElectricPoles(const std::vector<Entit
 	unsigned int posY = tilesInitialOffset;
 
 	const unsigned int distanceBetweenPoles = CalculationsUtility::Solver::calculateMaxDistanceBetweenPoles(electricPoleType);
+
+	auto setElectricPole = [&](std::pair<unsigned int, unsigned int> startPos)
+		{
+			for (Entities::ElectricPole* electricPole : electricPoles)
+			{
+				if (!electricPole->getIsPlaced())
+				{
+					for (int i = 0; i < electricPoleSideSize; i++)
+					{
+						for (int j = 0; j < electricPoleSideSize; j++)
+						{
+							Tile* tile = getTileByPosition(startPos);
+							tile->entity = dynamic_cast<Entities::Entity*>(electricPole);
+							if (!electricPole->getIsPlaced())
+							{
+								electricPole->setPosition(startPos);
+							}
+
+							startPos.first++;
+						}
+						startPos.second++;
+					}
+				}
+				else
+				{
+					IOUtil::Asserts::assertMessage(false,"TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric pole already placed!");
+				}
+
+				startPos.first -= electricPoleSideSize;
+				startPos.first += distanceBetweenPoles;
+				if (startPos.first > xSize)
+				{
+					startPos.first = tilesInitialOffset;
+					startPos.second += distanceBetweenPoles;
+				}
+			}
+		};
 
 	auto setElectrifiedArea = [&](std::pair<unsigned int, unsigned int> startPos)
 		{
@@ -81,6 +118,7 @@ void TilesMapping::ActiveSurfaceMap::insertElectricPoles(const std::vector<Entit
 		if (tile != nullptr)
 		{
 			setElectrifiedArea({ posX - tilesInitialOffset,posY - tilesInitialOffset });
+			setElectricPole({ posX,posY });
 		}
 
 		posX += distanceBetweenPoles;

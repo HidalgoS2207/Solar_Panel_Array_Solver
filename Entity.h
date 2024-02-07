@@ -89,6 +89,7 @@ namespace Entities
 		const std::pair<unsigned int, unsigned int>& getTilesDistribution() const;
 		const std::pair<unsigned int, unsigned int>& getPosition() const;
 		ENTITY_TYPE getEntityType() const;
+		const bool getIsPlaced() const;
 
 		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
 	protected:
@@ -100,6 +101,8 @@ namespace Entities
 		std::pair<unsigned int, unsigned int> position;
 
 		const ENTITY_TYPE entityType;
+
+		bool isPlaced;
 	};
 
 	class SolarPanel : public Entity

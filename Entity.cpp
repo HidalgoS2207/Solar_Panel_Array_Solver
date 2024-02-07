@@ -9,7 +9,8 @@ Entities::Entity::Entity(const std::vector<bool> tilesMap, const std::pair<unsig
 	tiles(0),
 	tilesDistribution(tilesDistribution),
 	position(position),
-	entityType(entityType)
+	entityType(entityType),
+	isPlaced(false)
 {
 	tilesDistMap = tilesMap;
 	for (bool tilesDistMapElem : tilesDistMap)
@@ -36,9 +37,15 @@ Entities::ENTITY_TYPE Entities::Entity::getEntityType() const
 	return entityType;
 }
 
+const bool Entities::Entity::getIsPlaced() const
+{
+	return isPlaced;
+}
+
 void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosition)
 {
 	position = newPosition;
+	isPlaced = true;
 }
 
 Entities::SolarPanel::SolarPanel()
