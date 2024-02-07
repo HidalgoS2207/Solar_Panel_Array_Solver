@@ -33,7 +33,7 @@ namespace IOUtil
 			return (ret + inputRangeOffset);
 		};
 
-		static inline int userInputPrompt(const char* prompTitle,const std::vector<std::string> userOptions, const char* errorText, const std::pair<int, int> inputRange)
+		static inline int userInputPrompt(const char* prompTitle, const std::vector<std::string> userOptions, const char* errorText, const std::pair<int, int> inputRange)
 		{
 			auto printUserOptions = [&]()
 				{
@@ -41,7 +41,7 @@ namespace IOUtil
 
 					for (int i = 0; i < userOptions.size(); i++)
 					{
-						std::cout << (i + 1) << ". " << userOptions[i] <<"\n";
+						std::cout << (i + 1) << ". " << userOptions[i] << "\n";
 					}
 
 					std::cout << "> ";
@@ -230,7 +230,7 @@ namespace CalculationsUtility
 	public:
 		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType)
 		{
-			unsigned int maxDistance = Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType) + (Entities::maxGapBetweenPolesInfluenceArea);
+			unsigned int maxDistance = (Entities::ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(electricPoleType) - 1) + (Entities::maxGapBetweenPolesInfluenceArea);
 
 			if (maxDistance > Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(electricPoleType))
 			{
