@@ -61,14 +61,16 @@ namespace TilesMapping
 		ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize);
 		~ActiveSurfaceMap();
 
-		void insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor);
-		void insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles);
+		bool insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor);
+		bool insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles);
 		void printSurface();
 	private:
 		std::vector<Tile> tiles;
 
 		const unsigned int xSize;
 		const unsigned int ySize;
+
+		bool electricPolesPlaced;
 	};
 }
 

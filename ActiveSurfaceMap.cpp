@@ -19,7 +19,8 @@ TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByP
 TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize)
 	:
 	xSize(tilesSize.first),
-	ySize(tilesSize.second)
+	ySize(tilesSize.second),
+	electricPolesPlaced(false)
 {
 	//! Y loop
 	for (unsigned int i = 0; i < tilesSize.second; i++)
@@ -35,16 +36,32 @@ TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, u
 TilesMapping::ActiveSurfaceMap::~ActiveSurfaceMap()
 {}
 
-void TilesMapping::ActiveSurfaceMap::insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor)
+bool TilesMapping::ActiveSurfaceMap::insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor)
 {
+	bool isEntityPlaced = false;
 
+	return isEntityPlaced;
 }
 
-void TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles)
+bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles)
 {
+	//! First assume success, any assert in the process will set this flag to false
+	electricPolesPlaced = true;
+
+	auto setAssertStatement = [&](const char* assertMsg) -> bool
+		{
+			electricPolesPlaced = false;
+			IOUtil::Asserts::assertMessage(electricPolesPlaced, assertMsg);
+			return electricPolesPlaced;
+		};
+
+	if (electricPoles.size() == 0)
+	{
+		return setAssertStatement("TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric Poles Array is empty!");
+	}
+
 	//! Rigth now all electric poles are uniform and the system doesn't manage combination of different ones
 	//! It is safe to extract the type from the first element of the array
-	IOUtil::Asserts::assertMessage(electricPoles.size(), "TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric Poles Array is empty!");
 	Entities::ELECTRIC_POLE_TYPE electricPoleType = electricPoles.front()->getElectricPoleType();
 
 	const unsigned int electricPoleOccupiedArea = Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(electricPoleType);
@@ -57,44 +74,42 @@ void TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 
 	const unsigned int distanceBetweenPoles = CalculationsUtility::Solver::calculateMaxDistanceBetweenPoles(electricPoleType);
 
-	auto setElectricPole = [&](std::pair<unsigned int, unsigned int> startPos)
+	auto setElectricPole = [&](Entities::ElectricPole* electricPole, std::pair<unsigned int, unsigned int> startPos) -> bool
 		{
-			for (Entities::ElectricPole* electricPole : electricPoles)
+			if (!electricPole->getIsPlaced())
 			{
-				if (!electricPole->getIsPlaced())
+				for (int i = 0; i < electricPoleSideSize; i++)
 				{
-					for (int i = 0; i < electricPoleSideSize; i++)
+					for (int j = 0; j < electricPoleSideSize; j++)
 					{
-						for (int j = 0; j < electricPoleSideSize; j++)
+						Tile* tile = getTileByPosition(startPos);
+						if (tile != nullptr)
 						{
-							Tile* tile = getTileByPosition(startPos);
 							tile->entity = dynamic_cast<Entities::Entity*>(electricPole);
 							if (!electricPole->getIsPlaced())
 							{
 								electricPole->setPosition(startPos);
 							}
-
-							startPos.first++;
 						}
-						startPos.second++;
+						else
+						{
+							return setAssertStatement("TilesMapping::ActiveSurfaceMap::insertElectricPoles - Tile is nullptr");
+						}
+						startPos.first++;
 					}
-				}
-				else
-				{
-					IOUtil::Asserts::assertMessage(false,"TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric pole already placed!");
+					startPos.first -= electricPoleSideSize;
+					startPos.second++;
 				}
 
-				startPos.first -= electricPoleSideSize;
-				startPos.first += distanceBetweenPoles;
-				if (startPos.first > xSize)
-				{
-					startPos.first = tilesInitialOffset;
-					startPos.second += distanceBetweenPoles;
-				}
+				return electricPolesPlaced;
+			}
+			else
+			{
+				return setAssertStatement("TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric pole already placed!");
 			}
 		};
 
-	auto setElectrifiedArea = [&](std::pair<unsigned int, unsigned int> startPos)
+	auto setElectrifiedArea = [&](std::pair<unsigned int, unsigned int> startPos) -> bool
 		{
 			for (int i = 0; i < electricPoleInfluenceTiles; i++)
 			{
@@ -105,21 +120,23 @@ void TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 					{
 						tile->isElectrified = true;
 					}
+					else
+					{
+						return setAssertStatement("TilesMapping::ActiveSurfaceMap::setElectrifiedArea - Tile is nullptr!");
+					}
 					startPos.first++;
 				}
 				startPos.first -= electricPoleInfluenceTiles;
 				startPos.second++;
 			}
+
+			return electricPolesPlaced;
 		};
 
 	for (auto& electricPole : electricPoles)
 	{
-		Tile* tile = getTileByPosition({ posX,posY });
-		if (tile != nullptr)
-		{
-			setElectrifiedArea({ posX - tilesInitialOffset,posY - tilesInitialOffset });
-			setElectricPole({ posX,posY });
-		}
+		if (!setElectrifiedArea({ posX - tilesInitialOffset,posY - tilesInitialOffset })) { break; };
+		if (!setElectricPole(electricPole, { posX,posY })) { break; }
 
 		posX += distanceBetweenPoles;
 		if (posX > xSize)
@@ -129,6 +146,8 @@ void TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 			if (posY > ySize) { break; }
 		}
 	}
+
+	return electricPolesPlaced;
 }
 
 void TilesMapping::ActiveSurfaceMap::printSurface()
@@ -150,6 +169,12 @@ void TilesMapping::ActiveSurfaceMap::printSurface()
 			{
 			case Entities::ENTITY_TYPE::ELECTRIC_POLE:
 				std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::ELECTRIC_POLE);
+				break;
+			case Entities::ENTITY_TYPE::SOLAR_PANEL:
+				std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::SOLAR_PANEL);
+				break;
+			case Entities::ENTITY_TYPE::ACCUMULATOR:
+				std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::ACCUMULATOR);
 				break;
 			default:
 				break;
