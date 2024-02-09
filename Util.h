@@ -159,6 +159,33 @@ namespace IOUtil
 	};
 }
 
+namespace RandomUtility
+{
+	static class UniformDistribution
+	{
+	public:
+		static void getIntegersList(const unsigned int retSize, std::vector<int>& container, int min, int max)
+		{
+			std::random_device r;
+
+			std::default_random_engine e1(r());
+			std::uniform_int_distribution<int> uniform_dist(min, max);
+
+			for (int i = 0; i < retSize; i++)
+			{
+				container.push_back(uniform_dist(e1));
+			}
+		}
+
+		static int getIntegerValue(int min, int max)
+		{
+			std::vector<int> retCont;
+			getIntegersList(1, retCont, min, max);
+			return retCont.front();
+		}
+	};
+}
+
 namespace CalculationsUtility
 {
 	const double AccumulatorToSolarPanelsRatio = 0.84;

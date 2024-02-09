@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
 	CalculationsUtility::Solver::calculateArrangement( solverSettings, solarPanels, accumulators, electricPoles);
 
 	CalculationsUtility::Solver::destroyEntities(electricPoles);
+
 	return 0;
 }
 

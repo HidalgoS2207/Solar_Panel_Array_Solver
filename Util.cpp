@@ -69,12 +69,17 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
+	//--Delete--
+	std::vector<int> uniformRandomContainer;
+	RandomUtility::UniformDistribution::getIntegersList(100, uniformRandomContainer, -50, 50);
+	//----------
+
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess,"CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
 	if(operationSucess) 
 	{
-
+		
 		activeSurfaceMap.printSurface();
 	}
 }
