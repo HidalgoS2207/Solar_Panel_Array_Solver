@@ -58,9 +58,9 @@ namespace TilesMapping
 			Entities::Entity* entity;
 		};
 
-		Tile* getTileByPosition(const std::pair<unsigned int, unsigned int>coordinates);
+		Tile* getTileByPosition(const uintPairCoordinates coordinates);
 	public:
-		ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize);
+		ActiveSurfaceMap(const uintPairCoordinates tilesSize);
 		~ActiveSurfaceMap();
 
 		bool insertEntity(Entities::Entity* entity, const uintPairCoordinates coor);
@@ -70,6 +70,17 @@ namespace TilesMapping
 		inline uintPairCoordinates getTilesMapSize() const
 		{
 			return uintPairCoordinates({ xSize,ySize });
+		}
+
+		inline void refreshTilesSate()
+		{
+			for (Tile& tile : tiles)
+			{
+				if ((tile.entity != nullptr) && (!tile.entity->getIsPlaced()))
+				{
+					tile.entity = nullptr;
+				}
+			}
 		}
 	private:
 		const bool checkTilesAvailability(const uintPairCoordinates range, const uintPairCoordinates pos);
