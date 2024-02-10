@@ -71,10 +71,53 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 {
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
-	IOUtil::Asserts::assertMessage(operationSucess,"CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
-	if(operationSucess) 
+	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
+	if (operationSucess)
 	{
-		
+		std::vector<Entities::Entity*> entitiesToPlace;
+		setEntitiesGeneralList(solarPanels, entitiesToPlace);
+		setEntitiesGeneralList(accumulators, entitiesToPlace);
+
+		switch (solverSettings.entitiesSpawnStrategy)
+		{
+		case CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM:
+			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, entitiesToPlace);
+			break;
+		case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_RANDOM:
+			break;
+		case CalculationsUtility::EntitySpawnStrategy::FULL_SEQUENTIAL:
+			break;
+		case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL:
+			break;
+		default:
+			IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateArrangement - EntitySpawnStrategy <%d> not identified - Using standard list order instead.", solverSettings.entitiesSpawnStrategy);
+			break;
+		}
+
+		activeSurfaceMap.insertEntity(entitiesToPlace[0], { 0,0 });
+		activeSurfaceMap.insertEntity(entitiesToPlace[1], { 3,0 });
+		activeSurfaceMap.insertEntity(entitiesToPlace[2], { 6,0 });
+
+		switch (solverSettings.entitiesArrangementStrategy)
+		{
+		case CalculationsUtility::EntityArrangementStrategy::RANDOM:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::RADIAL_OUT_FIRST:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::LINEAR_VER:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::LINEAR_HOR:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_VER:
+			break;
+		case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR:
+			break;
+		default:
+			break;
+		}
+
 		activeSurfaceMap.printSurface();
 	}
 }

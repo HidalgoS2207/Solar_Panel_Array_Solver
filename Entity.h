@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <map>
+#include <vector>
 
 namespace Entities
 {
@@ -89,9 +89,18 @@ namespace Entities
 		const std::pair<unsigned int, unsigned int>& getTilesDistribution() const;
 		const std::pair<unsigned int, unsigned int>& getPosition() const;
 		ENTITY_TYPE getEntityType() const;
+		const char* getEntityTypeStr() const;
 		const bool getIsPlaced() const;
 
 		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
+
+		inline static void resetEntities(std::vector<Entity*>& entities)
+		{
+			for (Entity* entity : entities)
+			{
+				entity->resetEntityPosition();
+			}
+		}
 	protected:
 		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType);
 
@@ -103,6 +112,33 @@ namespace Entities
 		const ENTITY_TYPE entityType;
 
 		bool isPlaced;
+
+	private:
+		inline void resetEntityPosition()
+		{
+			this->isPlaced = false;
+			this->position = { 0,0 };
+		}
+
+		static inline const char* localizeEntityType(ENTITY_TYPE entityType)
+		{
+			switch (entityType)
+			{
+			case Entities::ENTITY_TYPE::SOLAR_PANEL:
+				return "Solar Panel";
+				break;
+			case Entities::ENTITY_TYPE::ACCUMULATOR:
+				return "Accumulator";
+				break;
+			case Entities::ENTITY_TYPE::ELECTRIC_POLE:
+				return "Electric Pole";
+				break;
+			default:
+				//IOUtil::Asserts::assertMessageFormatted(false, "Cannot localize entity type of type %d", entityType);
+				return "";
+				break;
+			}
+		}
 	};
 
 	class SolarPanel : public Entity

@@ -42,29 +42,38 @@ namespace TilesMapping
 	class ActiveSurfaceMap
 	{
 	private:
+		using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
+
 		struct Tile
 		{
-			Tile(const std::pair<unsigned int, unsigned int> coordinates)
+			Tile(const uintPairCoordinates coordinates)
 				:
 				coordinates(coordinates),
 				entity(nullptr),
 				isElectrified(false)
 			{}
 
-			const std::pair<unsigned int, unsigned int> coordinates;
+			const uintPairCoordinates coordinates;
 			bool isElectrified;
 			Entities::Entity* entity;
 		};
 
-		Tile* getTileByPosition(std::pair<unsigned int, unsigned int>coordinates);
+		Tile* getTileByPosition(const std::pair<unsigned int, unsigned int>coordinates);
 	public:
 		ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize);
 		~ActiveSurfaceMap();
 
-		bool insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor);
+		bool insertEntity(Entities::Entity* entity, const uintPairCoordinates coor);
 		bool insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles);
 		void printSurface();
+
+		inline uintPairCoordinates getTilesMapSize() const
+		{
+			return uintPairCoordinates({ xSize,ySize });
+		}
 	private:
+		const bool checkTilesAvailability(const uintPairCoordinates range, const uintPairCoordinates pos);
+
 		std::vector<Tile> tiles;
 
 		const unsigned int xSize;

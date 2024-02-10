@@ -3,6 +3,7 @@
 #include "ActiveSurfaceMap.h"
 #include "Entity.h"
 
+#include <algorithm>
 #include <iostream>
 #include <math.h>
 #include <random>
@@ -161,6 +162,12 @@ namespace IOUtil
 
 namespace RandomUtility
 {
+	enum RandomDistribution
+	{
+		UNIFORM,
+		NORMAL
+	};
+
 	static class UniformDistribution
 	{
 	public:
@@ -182,6 +189,33 @@ namespace RandomUtility
 			std::vector<int> retCont;
 			getIntegersList(1, retCont, min, max);
 			return retCont.front();
+		}
+	};
+
+	static class ListOperations
+	{
+	public:
+		template<typename T>
+		static void randomizeList(RandomDistribution distributionType, std::vector<T>& list)
+		{
+			switch (distributionType)
+			{
+			case RandomUtility::UNIFORM:
+			{
+				std::vector<int> listOfRandomIdx;
+				UniformDistribution::getIntegersList(list.size(), listOfRandomIdx, 0, list.size() - 1);
+				std::vector<int>::iterator listOfRandomIdxIt = listOfRandomIdx.begin();
+				for (auto& listElem : list)
+				{
+					std::swap(listElem, list[*listOfRandomIdxIt++]);
+				}
+			}
+			break;
+			case RandomUtility::NORMAL:
+				break;
+			default:
+				break;
+			}
 		}
 	};
 }
@@ -255,6 +289,15 @@ namespace CalculationsUtility
 	class Solver
 	{
 	private:
+		template<typename E>
+		static inline void setEntitiesGeneralList(std::vector<E>& listIn, std::vector<Entities::Entity*>& listOut)
+		{
+			for (E& elemIn : listIn)
+			{
+				listOut.push_back(dynamic_cast<Entities::Entity*>(&elemIn));
+			}
+		}
+
 		static inline unsigned int calculateMaxDistanceBetweenPoles(Entities::ELECTRIC_POLE_TYPE electricPoleType, unsigned int& gapBetweenElectrifiedAreas)
 		{
 			gapBetweenElectrifiedAreas = (Entities::maxGapBetweenPolesInfluenceArea);

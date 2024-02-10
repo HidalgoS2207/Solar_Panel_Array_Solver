@@ -2,21 +2,20 @@
 
 const TilesMapping::TilesRepresentationMap TilesMapping::TileRepresentationMapping::tilesRepresentationMap = TilesMapping::TileRepresentationMapping::createMap();
 
-TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByPosition(std::pair<unsigned int, unsigned int> coordinates)
+TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByPosition(const uintPairCoordinates coordinates)
 {
-	for (auto& tile : tiles)
-	{
-		if (tile.coordinates == coordinates)
-		{
-			return &tile;
-		}
-	}
+	const unsigned int idx = coordinates.first + (coordinates.second * xSize);
 
-	IOUtil::Asserts::assertMessageFormatted(false, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
-	return nullptr;
+	IOUtil::Asserts::assertMessageFormatted(idx < tiles.size(), "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile idx out of bounds idx = %d ", idx);
+
+	Tile* tileRet = nullptr;
+	if (idx < tiles.size()) { tileRet = &tiles[idx]; }
+
+	IOUtil::Asserts::assertMessageFormatted(tileRet != nullptr, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
+	return tileRet;
 }
 
-TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, unsigned int> tilesSize)
+TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const uintPairCoordinates tilesSize)
 	:
 	xSize(tilesSize.first),
 	ySize(tilesSize.second),
@@ -28,7 +27,7 @@ TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, u
 		//! X loop
 		for (unsigned int j = 0; j < tilesSize.first; j++)
 		{
-			tiles.emplace_back(std::pair<unsigned int, unsigned int>{ j, i });
+			tiles.emplace_back(uintPairCoordinates{ j, i });
 		}
 	}
 }
@@ -36,9 +35,25 @@ TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const std::pair<unsigned int, u
 TilesMapping::ActiveSurfaceMap::~ActiveSurfaceMap()
 {}
 
-bool TilesMapping::ActiveSurfaceMap::insertEntity(const Entities::Entity* entity, const std::pair<unsigned int, unsigned int> coor)
+bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, const uintPairCoordinates coor)
 {
 	bool isEntityPlaced = false;
+
+	const unsigned int xSizeEntity = entity->getTilesDistribution().first;
+	const unsigned int ySizeEntity = entity->getTilesDistribution().second;
+
+	if (checkTilesAvailability(entity->getTilesDistribution(), coor))
+	{
+		for (int i = coor.second; i < entity->getTilesDistribution().second + coor.second; i++)
+		{
+			for (int j = coor.first; j < entity->getTilesDistribution().first + coor.first; j++)
+			{
+				Tile* tile = this->getTileByPosition({ j,i });
+				if (!entity->getIsPlaced()) { entity->setPosition({ j,i }); }
+				tile->entity = entity;
+			}
+		}
+	}
 
 	return isEntityPlaced;
 }
@@ -74,7 +89,7 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 
 	const unsigned int distanceBetweenPoles = CalculationsUtility::Solver::calculateMaxDistanceBetweenPoles(electricPoleType);
 
-	auto setElectricPole = [&](Entities::ElectricPole* electricPole, std::pair<unsigned int, unsigned int> startPos) -> bool
+	auto setElectricPole = [&](Entities::ElectricPole* electricPole, uintPairCoordinates startPos) -> bool
 		{
 			if (!electricPole->getIsPlaced())
 			{
@@ -109,7 +124,7 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 			}
 		};
 
-	auto setElectrifiedArea = [&](std::pair<unsigned int, unsigned int> startPos) -> bool
+	auto setElectrifiedArea = [&](uintPairCoordinates startPos) -> bool
 		{
 			for (int i = 0; i < electricPoleInfluenceTiles; i++)
 			{
@@ -185,4 +200,27 @@ void TilesMapping::ActiveSurfaceMap::printSurface()
 		idx = (idx == xSize) ? 0 : idx;
 		if (idx == 0) { std::cout << '\n'; }
 	}
+}
+
+const bool TilesMapping::ActiveSurfaceMap::checkTilesAvailability(const uintPairCoordinates range, const uintPairCoordinates pos)
+{
+	const unsigned int xOffset = pos.first + range.first;
+	const unsigned int yOffset = pos.second + range.second;
+
+	for (int i = pos.second; i < yOffset; i++)
+	{
+		for (int j = pos.first; j < xOffset; j++)
+		{
+			Tile* tile = this->getTileByPosition({ j,i });
+			if (tile != nullptr)
+			{
+				if (tile->entity != nullptr)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
 }

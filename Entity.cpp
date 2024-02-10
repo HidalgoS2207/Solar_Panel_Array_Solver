@@ -37,6 +37,11 @@ Entities::ENTITY_TYPE Entities::Entity::getEntityType() const
 	return entityType;
 }
 
+const char* Entities::Entity::getEntityTypeStr() const
+{
+	return Entities::Entity::localizeEntityType(entityType);
+}
+
 const bool Entities::Entity::getIsPlaced() const
 {
 	return isPlaced;
