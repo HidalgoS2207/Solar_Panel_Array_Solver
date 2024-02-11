@@ -57,6 +57,7 @@ namespace TilesMapping
 			bool isElectrified;
 			Entities::Entity* entity;
 		};
+		using TilesByCoordinate = std::map<uintPairCoordinates, Tile*>;
 
 		Tile* getTileByPosition(const uintPairCoordinates coordinates);
 	public:
@@ -75,18 +76,19 @@ namespace TilesMapping
 
 		inline void refreshTilesSate()
 		{
-			for (Tile& tile : tiles)
+			for (Tile* tile : tiles)
 			{
-				if (tile.entity == nullptr) { continue; }
-				if (tile.entity->getIsPlaced()) { continue; }
+				if (tile->entity == nullptr) { continue; }
+				if (tile->entity->getIsPlaced()) { continue; }
 
-				tile.entity = nullptr;
+				tile->entity = nullptr;
 			}
 		}
 	private:
 		const bool checkTilesAvailability(const uintPairCoordinates range, const uintPairCoordinates pos);
 
-		std::vector<Tile> tiles;
+		std::vector<Tile*> tiles;
+		TilesByCoordinate tilesByCoordinate;
 
 		const unsigned int xSize;
 		const unsigned int ySize;

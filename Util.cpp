@@ -88,7 +88,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		bool isAvailable;
 	};
 	using TilesInfoList = std::vector<TileInfo>;
-	using TilesInfoByTileCoordinates = std::map<uintPairCoordinates, TileInfo>;
+	using TilesInfoByTileCoordinates = std::map<uintPairCoordinates, TileInfo*>;
 
 	auto updateTilesInfo = [](Entities::Entity* entityPtr, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates, uintPairCoordinates pos)
 		{
@@ -100,7 +100,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 				{
 					if (tilesInfoByTileCoordinates.find(pos) != tilesInfoByTileCoordinates.end())
 					{
-						tilesInfoByTileCoordinates[pos].isAvailable = false;
+						tilesInfoByTileCoordinates[pos]->isAvailable = false;
 					}
 
 					pos.first++;
@@ -127,7 +127,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			return tilesInfoList;
 		};
 
-	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates)
+	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates) -> bool
 		{
 			Entities::Entity::resetEntities(entitiesList);
 			activeSurfaceMap.refreshTilesSate();
@@ -136,8 +136,10 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			tilesInfoByTileCoordinates.clear();
 			for (TileInfo& tileInfo : tilesInfoList)
 			{
-				tilesInfoByTileCoordinates[tileInfo.coordinates] = tileInfo;
+				tilesInfoByTileCoordinates[tileInfo.coordinates] = &tileInfo;
 			}
+
+			return true;
 		};
 
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
@@ -152,7 +154,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		TilesInfoByTileCoordinates tilesInfoByTileCoordinates;
 		for (TileInfo& tileInfo : tilesInfoList)
 		{
-			tilesInfoByTileCoordinates[tileInfo.coordinates] = tileInfo;
+			tilesInfoByTileCoordinates[tileInfo.coordinates] = &tileInfo;
 		}
 
 		switch (solverSettings.entitiesSpawnStrategy)
@@ -190,32 +192,33 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		case CalculationsUtility::EntityArrangementStrategy::RANDOM:
 			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
 			unsigned int iteration = 0;
-			while (iteration < sMaxIterationsNumber)
+			bool reDistribute = false;
+			do
 			{
+				reDistribute = false;
 				for (Entities::Entity* entityPtr : entitiesToPlace)
 				{
-					bool entityPlaced = false;
-
 					for (TileInfo& tileInfo : tilesInfoList)
 					{
 						if (!tileInfo.isAvailable) { continue; }
 
 						if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
 						{
-							entityPlaced = true;
 							updateTilesInfo(entityPtr, tilesInfoList, tilesInfoByTileCoordinates, tileInfo.coordinates);
 							break;
 						}
 					}
 
-					if (!entityPlaced)
+					if (!entityPtr->getIsPlaced())
 					{
-						resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
+						reDistribute = resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
+						RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
 						iteration++;
+						IOUtil::Asserts::assertMessageFormatted(!reDistribute, "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
 						break;
 					}
 				}
-			}
+			} while ((iteration < sMaxIterationsNumber) && (reDistribute));
 			break;
 		}
 

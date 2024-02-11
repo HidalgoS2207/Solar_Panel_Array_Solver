@@ -168,7 +168,7 @@ namespace RandomUtility
 		NORMAL
 	};
 
-	static class UniformDistribution
+	class UniformDistribution
 	{
 	public:
 		static void getIntegersList(const unsigned int retSize, std::vector<int>& container, int min, int max)
@@ -192,7 +192,7 @@ namespace RandomUtility
 		}
 	};
 
-	static class ListOperations
+	class ListOperations
 	{
 	public:
 		template<typename T>

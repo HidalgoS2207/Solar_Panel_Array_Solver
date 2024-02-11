@@ -4,15 +4,12 @@ const TilesMapping::TilesRepresentationMap TilesMapping::TileRepresentationMappi
 
 TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByPosition(const uintPairCoordinates coordinates)
 {
-	const unsigned int idx = coordinates.first + (coordinates.second * xSize);
-
-	IOUtil::Asserts::assertMessageFormatted(idx < tiles.size(), "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile idx out of bounds idx = %d ", idx);
-
-	Tile* tileRet = nullptr;
-	if (idx < tiles.size()) { tileRet = &tiles[idx]; }
-
-	IOUtil::Asserts::assertMessageFormatted(tileRet != nullptr, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
-	return tileRet;
+	if (tilesByCoordinate.find(coordinates) == tilesByCoordinate.end()) 
+	{ 
+		IOUtil::Asserts::assertMessageFormatted(false, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
+		return nullptr; 
+	}
+	return tilesByCoordinate[coordinates];
 }
 
 TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const uintPairCoordinates tilesSize)
@@ -27,18 +24,23 @@ TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const uintPairCoordinates tiles
 		//! X loop
 		for (unsigned int j = 0; j < tilesSize.first; j++)
 		{
-			tiles.emplace_back(uintPairCoordinates{ j, i });
+			Tile* tilePtr = new Tile(uintPairCoordinates{ j, i });
+			tiles.push_back(tilePtr);
+			tilesByCoordinate[{j, i}] = tilePtr;
 		}
 	}
 }
 
 TilesMapping::ActiveSurfaceMap::~ActiveSurfaceMap()
-{}
+{
+	for (Tile* tile : tiles)
+	{
+		delete tile;
+	}
+}
 
 bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, const uintPairCoordinates coor)
 {
-	bool isEntityPlaced = false;
-
 	const unsigned int xSizeEntity = entity->getTilesDistribution().first;
 	const unsigned int ySizeEntity = entity->getTilesDistribution().second;
 
@@ -55,7 +57,7 @@ bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, cons
 		}
 	}
 
-	return isEntityPlaced;
+	return entity->getIsPlaced();
 }
 
 bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles)
@@ -167,15 +169,7 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 
 bool TilesMapping::ActiveSurfaceMap::getIsAvailable(const uintPairCoordinates coor) const
 {
-	const unsigned int idx = (coor.first + (coor.second * xSize));
-
-	if (idx >= tiles.size()) 
-	{ 
-		IOUtil::Asserts::assertMessageFormatted(idx < tiles.size(), "TilesMapping::ActiveSurfaceMap::getIsAvailable - Tile idx out of bounds idx = %d ", idx);
-		return false; 
-	}
-
-	return (tiles[idx].entity == nullptr);
+	return (tilesByCoordinate.find(coor) != tilesByCoordinate.end());
 }
 
 void TilesMapping::ActiveSurfaceMap::printSurface()
@@ -186,14 +180,14 @@ void TilesMapping::ActiveSurfaceMap::printSurface()
 
 	for (auto& tile : tiles)
 	{
-		if (tile.entity == nullptr)
+		if (tile->entity == nullptr)
 		{
-			if (tile.isElectrified) { std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::EMPTY_ELECTRIFIED_SPACE); }
+			if (tile->isElectrified) { std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::EMPTY_ELECTRIFIED_SPACE); }
 			else { std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::EMPTY_SPACE); }
 		}
 		else
 		{
-			switch (tile.entity->getEntityType())
+			switch (tile->entity->getEntityType())
 			{
 			case Entities::ENTITY_TYPE::ELECTRIC_POLE:
 				std::cout << TileRepresentationMapping::tilesRepresentationMap.at(TilesMapping::TileRepresentation::ELECTRIC_POLE);
