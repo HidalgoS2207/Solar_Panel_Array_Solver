@@ -90,7 +90,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	using TilesInfoList = std::vector<TileInfo>;
 	using TilesInfoByTileCoordinates = std::map<uintPairCoordinates, TileInfo>;
 
-	auto updateTilesInfo = [](Entities::Entity* entityPtr,TilesInfoList& tilesInfoList, uintPairCoordinates pos)
+	auto updateTilesInfo = [](Entities::Entity* entityPtr, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates, uintPairCoordinates pos)
 		{
 			uintPairCoordinates entitySize = entityPtr->getTilesDistribution();
 
@@ -98,7 +98,10 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			{
 				for (int j = 0; j < entitySize.first; j++)
 				{
-
+					if (tilesInfoByTileCoordinates.find(pos) != tilesInfoByTileCoordinates.end())
+					{
+						tilesInfoByTileCoordinates[pos].isAvailable = false;
+					}
 
 					pos.first++;
 				}
@@ -124,12 +127,17 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			return tilesInfoList;
 		};
 
-	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList)
+	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates)
 		{
 			Entities::Entity::resetEntities(entitiesList);
 			activeSurfaceMap.refreshTilesSate();
 			tilesInfoList.clear();
 			tilesInfoList = generateTilesInfoList();
+			tilesInfoByTileCoordinates.clear();
+			for (TileInfo& tileInfo : tilesInfoList)
+			{
+				tilesInfoByTileCoordinates[tileInfo.coordinates] = tileInfo;
+			}
 		};
 
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
@@ -195,13 +203,14 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 						if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
 						{
 							entityPlaced = true;
+							updateTilesInfo(entityPtr, tilesInfoList, tilesInfoByTileCoordinates, tileInfo.coordinates);
 							break;
 						}
 					}
 
 					if (!entityPlaced)
 					{
-						resetTiles(entitiesToPlace, tilesInfoList);
+						resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
 						iteration++;
 						break;
 					}
