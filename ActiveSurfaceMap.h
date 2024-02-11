@@ -94,6 +94,9 @@ namespace TilesMapping
 		const unsigned int ySize;
 
 		bool electricPolesPlaced;
+		
+		//----DEBUG VARS-----
+		const bool verboseExecution;
 	};
 }
 

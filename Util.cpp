@@ -69,10 +69,14 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
+	/*Debug vars*/
+	const bool verboseExecution = false;
+	/*----------*/
+
 	using EntitiesPtrList = std::vector<Entities::Entity*>;
 	using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
 
-	static unsigned int sMaxIterationsNumber = 10000;
+	static unsigned int sMaxIterationsNumber = 1000000;
 
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
 
@@ -214,11 +218,12 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 						reDistribute = resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
 						RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
 						iteration++;
-						IOUtil::Asserts::assertMessageFormatted(!reDistribute, "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
+						IOUtil::Asserts::assertMessageFormatted((!reDistribute || !verboseExecution), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
 						break;
 					}
 				}
 			} while ((iteration < sMaxIterationsNumber) && (reDistribute));
+			IOUtil::Asserts::assertMessageFormatted(false, "Calculations ended in Iteration : %d", iteration);
 			break;
 		}
 

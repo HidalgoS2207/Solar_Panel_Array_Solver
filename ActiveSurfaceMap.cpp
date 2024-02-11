@@ -6,7 +6,7 @@ TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByP
 {
 	if (tilesByCoordinate.find(coordinates) == tilesByCoordinate.end()) 
 	{ 
-		IOUtil::Asserts::assertMessageFormatted(false, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
+		IOUtil::Asserts::assertMessageFormatted(!verboseExecution, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
 		return nullptr; 
 	}
 	return tilesByCoordinate[coordinates];
@@ -16,7 +16,9 @@ TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const uintPairCoordinates tiles
 	:
 	xSize(tilesSize.first),
 	ySize(tilesSize.second),
-	electricPolesPlaced(false)
+	electricPolesPlaced(false),
+	/*debug vars*/
+	verboseExecution(false)
 {
 	//! Y loop
 	for (unsigned int i = 0; i < tilesSize.second; i++)
