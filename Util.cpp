@@ -70,13 +70,13 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
 	/*Debug vars*/
-	const bool verboseExecution = true;
+	const bool verboseExecution = false;
 	/*----------*/
 
 	using EntitiesPtrList = std::vector<Entities::Entity*>;
 	using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
 
-	static unsigned int sMaxIterationsNumber = 100;
+	static unsigned int sMaxIterationsNumber = 100000;
 
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
 
@@ -146,6 +146,49 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			return true;
 		};
 
+	auto setGeneralistOrder = [&](EntitiesPtrList& entitiesToPlace)
+		{
+			switch (solverSettings.entitiesSpawnStrategy)
+			{
+			case CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM:
+				RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, entitiesToPlace);
+				break;
+			case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_RANDOM:
+				break;
+			case CalculationsUtility::EntitySpawnStrategy::FULL_SEQUENTIAL:
+				break;
+			case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL:
+				break;
+			default:
+				IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateArrangement - EntitySpawnStrategy <%d> not identified - Using standard list order instead.", solverSettings.entitiesSpawnStrategy);
+				break;
+			}
+		};
+
+	auto setTilesInfoList = [&](TilesInfoList& tilesInfoList)
+		{
+			switch (solverSettings.entitiesArrangementStrategy)
+			{
+			case CalculationsUtility::EntityArrangementStrategy::RADIAL_OUT_FIRST:
+				break;
+			case CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST:
+				break;
+			case CalculationsUtility::EntityArrangementStrategy::LINEAR_VER:
+				break;
+			case CalculationsUtility::EntityArrangementStrategy::LINEAR_HOR:
+				//Do nothing an iterate naturally trought the list
+				break;
+			case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_VER:
+				break;
+			case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR:
+				break;
+			default:
+			case CalculationsUtility::EntityArrangementStrategy::RANDOM:
+				RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
+				break;
+			}
+		};
+
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
 	if (operationSucess)
@@ -161,71 +204,40 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			tilesInfoByTileCoordinates[tileInfo.coordinates] = &tileInfo;
 		}
 
-		switch (solverSettings.entitiesSpawnStrategy)
-		{
-		case CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM:
-			break;
-			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, entitiesToPlace);
-		case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_RANDOM:
-			break;
-		case CalculationsUtility::EntitySpawnStrategy::FULL_SEQUENTIAL:
-			break;
-		case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL:
-			break;
-		default:
-			IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateArrangement - EntitySpawnStrategy <%d> not identified - Using standard list order instead.", solverSettings.entitiesSpawnStrategy);
-			break;
-		}
+		unsigned int iteration = 0;
+		bool reDistribute = false;
 
-		switch (solverSettings.entitiesArrangementStrategy)
+		setGeneralistOrder(entitiesToPlace);
+		setTilesInfoList(tilesInfoList);
+		do
 		{
-		case CalculationsUtility::EntityArrangementStrategy::RADIAL_OUT_FIRST:
-			break;
-		case CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST:
-			break;
-		case CalculationsUtility::EntityArrangementStrategy::LINEAR_VER:
-			break;
-		case CalculationsUtility::EntityArrangementStrategy::LINEAR_HOR:
-			break;
-		case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_VER:
-			break;
-		case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR:
-			break;
-		default:
-			IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateArrangement - EntityArrangementStrategy <%d> not identified - Using random arrangement instead.", solverSettings.entitiesArrangementStrategy);
-		case CalculationsUtility::EntityArrangementStrategy::RANDOM:
-			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
-			unsigned int iteration = 0;
-			bool reDistribute = false;
-			do
+			reDistribute = false;
+			for (Entities::Entity* entityPtr : entitiesToPlace)
 			{
-				reDistribute = false;
-				for (Entities::Entity* entityPtr : entitiesToPlace)
+				for (TileInfo& tileInfo : tilesInfoList)
 				{
-					for (TileInfo& tileInfo : tilesInfoList)
-					{
-						if (!tileInfo.isAvailable) { continue; }
+					if (!tileInfo.isAvailable) { continue; }
 
-						if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
-						{
-							updateTilesInfo(entityPtr, tilesInfoList, tilesInfoByTileCoordinates, tileInfo.coordinates);
-							break;
-						}
-					}
-
-					if (!entityPtr->getIsPlaced())
+					if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
 					{
-						reDistribute = resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
-						RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
-						iteration++;
-						IOUtil::Asserts::assertMessageFormatted((!reDistribute || !verboseExecution), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
+						updateTilesInfo(entityPtr, tilesInfoList, tilesInfoByTileCoordinates, tileInfo.coordinates);
 						break;
 					}
 				}
-			} while ((iteration < sMaxIterationsNumber) && (reDistribute));
-			IOUtil::Asserts::assertMessageFormatted(false, "Calculations ended in Iteration : %d", iteration);
-			break;
-		}
+
+				if (!entityPtr->getIsPlaced())
+				{
+					reDistribute = resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
+					setTilesInfoList(tilesInfoList);
+					setGeneralistOrder(entitiesToPlace);
+					iteration++;
+					IOUtil::Asserts::assertMessageFormatted((!reDistribute || !verboseExecution), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
+					break;
+				}
+			}
+		} while ((iteration < sMaxIterationsNumber) && (reDistribute));
+
+		IOUtil::Asserts::assertMessageFormatted(false, "Calculations ended in Iteration : %d", iteration);
 
 		const unsigned int freeSurface = activeSurfaceMap.getFreeSurface();
 		const unsigned int totalSurface = activeSurfaceMap.getTilesMapSize().first * activeSurfaceMap.getTilesMapSize().second;

@@ -4,6 +4,7 @@
 #include "Entity.h"
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <math.h>
 #include <random>
