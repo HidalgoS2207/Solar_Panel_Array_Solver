@@ -165,6 +165,19 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 	return electricPolesPlaced;
 }
 
+bool TilesMapping::ActiveSurfaceMap::getIsAvailable(const uintPairCoordinates coor) const
+{
+	const unsigned int idx = (coor.first + (coor.second * xSize));
+
+	if (idx >= tiles.size()) 
+	{ 
+		IOUtil::Asserts::assertMessageFormatted(idx < tiles.size(), "TilesMapping::ActiveSurfaceMap::getIsAvailable - Tile idx out of bounds idx = %d ", idx);
+		return false; 
+	}
+
+	return (tiles[idx].entity == nullptr);
+}
+
 void TilesMapping::ActiveSurfaceMap::printSurface()
 {
 	std::cout << "\n\n Current Surface: \n\n";
@@ -207,20 +220,18 @@ const bool TilesMapping::ActiveSurfaceMap::checkTilesAvailability(const uintPair
 	const unsigned int xOffset = pos.first + range.first;
 	const unsigned int yOffset = pos.second + range.second;
 
+	unsigned int electrifiedTiles = 0;
+
 	for (int i = pos.second; i < yOffset; i++)
 	{
 		for (int j = pos.first; j < xOffset; j++)
 		{
 			Tile* tile = this->getTileByPosition({ j,i });
-			if (tile != nullptr)
-			{
-				if (tile->entity != nullptr)
-				{
-					return false;
-				}
-			}
+			if (tile == nullptr) { return false; }
+			if (tile->entity != nullptr) { return false; }
+			if (tile->isElectrified) { electrifiedTiles++; }
 		}
 	}
 
-	return true;
+	return (electrifiedTiles > 0);
 }

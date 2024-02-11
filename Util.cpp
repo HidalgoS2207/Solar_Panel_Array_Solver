@@ -69,20 +69,89 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
+	using EntitiesPtrList = std::vector<Entities::Entity*>;
+	using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
+
+	static unsigned int sMaxIterationsNumber = 10000;
+
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
+
+	struct TileInfo
+	{
+		TileInfo()
+		{
+			coordinates = { 0,0 };
+			isAvailable = false;
+		}
+
+		uintPairCoordinates coordinates;
+		bool isAvailable;
+	};
+	using TilesInfoList = std::vector<TileInfo>;
+	using TilesInfoByTileCoordinates = std::map<uintPairCoordinates, TileInfo>;
+
+	auto updateTilesInfo = [](Entities::Entity* entityPtr,TilesInfoList& tilesInfoList, uintPairCoordinates pos)
+		{
+			uintPairCoordinates entitySize = entityPtr->getTilesDistribution();
+
+			for (int i = 0; i < entitySize.second; i++)
+			{
+				for (int j = 0; j < entitySize.first; j++)
+				{
+
+
+					pos.first++;
+				}
+				pos.second++;
+			}
+		};
+
+	auto generateTilesInfoList = [&]() -> TilesInfoList
+		{
+			TilesInfoList tilesInfoList;
+			const uintPairCoordinates tilesMapSize = activeSurfaceMap.getTilesMapSize();
+
+			for (int i = 0; i < tilesMapSize.second; i++)
+			{
+				for (int j = 0; j < tilesMapSize.first; j++)
+				{
+					tilesInfoList.emplace_back();
+					tilesInfoList.back().coordinates = { j,i };
+					tilesInfoList.back().isAvailable = activeSurfaceMap.getIsAvailable({ j,i });
+				}
+			}
+
+			return tilesInfoList;
+		};
+
+	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList)
+		{
+			Entities::Entity::resetEntities(entitiesList);
+			activeSurfaceMap.refreshTilesSate();
+			tilesInfoList.clear();
+			tilesInfoList = generateTilesInfoList();
+		};
+
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
 	if (operationSucess)
 	{
-		std::vector<Entities::Entity*> entitiesToPlace;
+		EntitiesPtrList entitiesToPlace;
 		setEntitiesGeneralList(solarPanels, entitiesToPlace);
 		setEntitiesGeneralList(accumulators, entitiesToPlace);
+
+		TilesInfoList tilesInfoList = generateTilesInfoList();
+		TilesInfoByTileCoordinates tilesInfoByTileCoordinates;
+		for (TileInfo& tileInfo : tilesInfoList)
+		{
+			tilesInfoByTileCoordinates[tileInfo.coordinates] = tileInfo;
+		}
 
 		switch (solverSettings.entitiesSpawnStrategy)
 		{
 		case CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM:
-			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, entitiesToPlace);
 			break;
+			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, entitiesToPlace);
 		case CalculationsUtility::EntitySpawnStrategy::WEIGHTED_RANDOM:
 			break;
 		case CalculationsUtility::EntitySpawnStrategy::FULL_SEQUENTIAL:
@@ -94,14 +163,8 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			break;
 		}
 
-		activeSurfaceMap.insertEntity(entitiesToPlace[0], { 0,0 });
-		activeSurfaceMap.insertEntity(entitiesToPlace[1], { 3,0 });
-		activeSurfaceMap.insertEntity(entitiesToPlace[2], { 6,0 });
-
 		switch (solverSettings.entitiesArrangementStrategy)
 		{
-		case CalculationsUtility::EntityArrangementStrategy::RANDOM:
-			break;
 		case CalculationsUtility::EntityArrangementStrategy::RADIAL_OUT_FIRST:
 			break;
 		case CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST:
@@ -115,6 +178,35 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		case CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR:
 			break;
 		default:
+			IOUtil::Asserts::assertMessageFormatted(false, "CalculationsUtility::Solver::calculateArrangement - EntityArrangementStrategy <%d> not identified - Using random arrangement instead.", solverSettings.entitiesArrangementStrategy);
+		case CalculationsUtility::EntityArrangementStrategy::RANDOM:
+			RandomUtility::ListOperations::randomizeList(RandomUtility::RandomDistribution::UNIFORM, tilesInfoList);
+			unsigned int iteration = 0;
+			while (iteration < sMaxIterationsNumber)
+			{
+				for (Entities::Entity* entityPtr : entitiesToPlace)
+				{
+					bool entityPlaced = false;
+
+					for (TileInfo& tileInfo : tilesInfoList)
+					{
+						if (!tileInfo.isAvailable) { continue; }
+
+						if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
+						{
+							entityPlaced = true;
+							break;
+						}
+					}
+
+					if (!entityPlaced)
+					{
+						resetTiles(entitiesToPlace, tilesInfoList);
+						iteration++;
+						break;
+					}
+				}
+			}
 			break;
 		}
 
