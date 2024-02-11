@@ -67,6 +67,7 @@ namespace TilesMapping
 		bool insertEntity(Entities::Entity* entity, const uintPairCoordinates coor);
 		bool insertElectricPoles(std::vector<Entities::ElectricPole*>& electricPoles);
 		bool getIsAvailable(const uintPairCoordinates coor) const;
+		unsigned int getFreeSurface() const;
 		void printSurface();
 
 		inline uintPairCoordinates getTilesMapSize() const

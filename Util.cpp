@@ -70,13 +70,13 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
 	/*Debug vars*/
-	const bool verboseExecution = false;
+	const bool verboseExecution = true;
 	/*----------*/
 
 	using EntitiesPtrList = std::vector<Entities::Entity*>;
 	using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
 
-	static unsigned int sMaxIterationsNumber = 1000000;
+	static unsigned int sMaxIterationsNumber = 100;
 
 	TilesMapping::ActiveSurfaceMap activeSurfaceMap(calculateSidesSize(solverSettings));
 
@@ -227,6 +227,11 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			break;
 		}
 
+		const unsigned int freeSurface = activeSurfaceMap.getFreeSurface();
+		const unsigned int totalSurface = activeSurfaceMap.getTilesMapSize().first * activeSurfaceMap.getTilesMapSize().second;
+
+		std::cout << "\n\nUtilized space : " << ((1.f - (static_cast<float>(freeSurface) / static_cast<float>(totalSurface))) * 100.f) << "%\n";
+		
 		activeSurfaceMap.printSurface();
 	}
 }

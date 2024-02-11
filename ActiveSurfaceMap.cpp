@@ -174,6 +174,18 @@ bool TilesMapping::ActiveSurfaceMap::getIsAvailable(const uintPairCoordinates co
 	return (tilesByCoordinate.find(coor) != tilesByCoordinate.end());
 }
 
+unsigned int TilesMapping::ActiveSurfaceMap::getFreeSurface() const
+{
+	unsigned int ret = 0;
+
+	for (Tile* tile : tiles)
+	{
+		if (tile->entity == nullptr) { ret++; }
+	}
+
+	return ret;
+}
+
 void TilesMapping::ActiveSurfaceMap::printSurface()
 {
 	std::cout << "\n\n Current Surface: \n\n";
