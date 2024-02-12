@@ -33,6 +33,19 @@ void Output::Json::saveToFile(const char* fileName)
 
 	fclose(fileIn);
 	fclose(fileOut);
+
+	fileIn = fopen("testOut.Z", "rb");
+	fileOut = fopen("decompressed.Z", "w");
+
+	ret = zpipe.inf(fileIn, fileOut);
+
+	if (ret != Z_OK)
+	{
+		zpipe.zerr(ret);
+	}
+
+	fclose(fileIn);
+	fclose(fileOut);
 }
 
 std::string Output::Json::base64_encode(const void* data, const size_t& len)
