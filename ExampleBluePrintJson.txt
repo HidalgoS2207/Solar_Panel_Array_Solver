@@ -1,0 +1,872 @@
+{
+    "blueprint": {
+        "icons": [
+            {
+                "signal": {
+                    "type": "item",
+                    "name": "solar-panel"
+                },
+                "index": 1
+            },
+            {
+                "signal": {
+                    "type": "item",
+                    "name": "accumulator"
+                },
+                "index": 2
+            }
+        ],
+        "entities": [
+            {
+                "entity_number": 1,
+                "name": "solar-panel",
+                "position": {
+                    "x": 259.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 2,
+                "name": "solar-panel",
+                "position": {
+                    "x": 262.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 3,
+                "name": "solar-panel",
+                "position": {
+                    "x": 265.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 4,
+                "name": "solar-panel",
+                "position": {
+                    "x": 268.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 5,
+                "name": "solar-panel",
+                "position": {
+                    "x": 271.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 6,
+                "name": "solar-panel",
+                "position": {
+                    "x": 274.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 7,
+                "name": "solar-panel",
+                "position": {
+                    "x": 277.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 8,
+                "name": "solar-panel",
+                "position": {
+                    "x": 280.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 9,
+                "name": "solar-panel",
+                "position": {
+                    "x": 283.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 10,
+                "name": "solar-panel",
+                "position": {
+                    "x": 286.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 11,
+                "name": "solar-panel",
+                "position": {
+                    "x": 289.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 12,
+                "name": "solar-panel",
+                "position": {
+                    "x": 292.5,
+                    "y": -333.5
+                }
+            },
+            {
+                "entity_number": 13,
+                "name": "solar-panel",
+                "position": {
+                    "x": 259.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 14,
+                "name": "solar-panel",
+                "position": {
+                    "x": 262.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 15,
+                "name": "solar-panel",
+                "position": {
+                    "x": 265.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 16,
+                "name": "solar-panel",
+                "position": {
+                    "x": 268.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 17,
+                "name": "solar-panel",
+                "position": {
+                    "x": 271.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 18,
+                "name": "solar-panel",
+                "position": {
+                    "x": 274.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 19,
+                "name": "solar-panel",
+                "position": {
+                    "x": 277.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 20,
+                "name": "solar-panel",
+                "position": {
+                    "x": 280.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 21,
+                "name": "solar-panel",
+                "position": {
+                    "x": 283.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 22,
+                "name": "solar-panel",
+                "position": {
+                    "x": 286.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 23,
+                "name": "solar-panel",
+                "position": {
+                    "x": 289.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 24,
+                "name": "solar-panel",
+                "position": {
+                    "x": 292.5,
+                    "y": -330.5
+                }
+            },
+            {
+                "entity_number": 25,
+                "name": "solar-panel",
+                "position": {
+                    "x": 259.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 26,
+                "name": "solar-panel",
+                "position": {
+                    "x": 262.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 27,
+                "name": "accumulator",
+                "position": {
+                    "x": 265,
+                    "y": -328
+                }
+            },
+            {
+                "entity_number": 28,
+                "name": "accumulator",
+                "position": {
+                    "x": 267,
+                    "y": -328
+                }
+            },
+            {
+                "entity_number": 29,
+                "name": "solar-panel",
+                "position": {
+                    "x": 269.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 30,
+                "name": "solar-panel",
+                "position": {
+                    "x": 272.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 31,
+                "name": "solar-panel",
+                "position": {
+                    "x": 275.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 32,
+                "name": "solar-panel",
+                "position": {
+                    "x": 278.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 33,
+                "name": "solar-panel",
+                "position": {
+                    "x": 281.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 34,
+                "name": "accumulator",
+                "position": {
+                    "x": 285,
+                    "y": -328
+                }
+            },
+            {
+                "entity_number": 35,
+                "name": "solar-panel",
+                "position": {
+                    "x": 287.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 36,
+                "name": "solar-panel",
+                "position": {
+                    "x": 290.5,
+                    "y": -327.5
+                }
+            },
+            {
+                "entity_number": 37,
+                "name": "accumulator",
+                "position": {
+                    "x": 293,
+                    "y": -328
+                }
+            },
+            {
+                "entity_number": 38,
+                "name": "substation",
+                "position": {
+                    "x": 267,
+                    "y": -326
+                },
+                "neighbours": [
+                    39,
+                    103
+                ]
+            },
+            {
+                "entity_number": 39,
+                "name": "substation",
+                "position": {
+                    "x": 285,
+                    "y": -326
+                },
+                "neighbours": [
+                    38,
+                    104
+                ]
+            },
+            {
+                "entity_number": 40,
+                "name": "accumulator",
+                "position": {
+                    "x": 293,
+                    "y": -326
+                }
+            },
+            {
+                "entity_number": 41,
+                "name": "solar-panel",
+                "position": {
+                    "x": 259.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 42,
+                "name": "solar-panel",
+                "position": {
+                    "x": 262.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 43,
+                "name": "accumulator",
+                "position": {
+                    "x": 265,
+                    "y": -324
+                }
+            },
+            {
+                "entity_number": 44,
+                "name": "accumulator",
+                "position": {
+                    "x": 267,
+                    "y": -324
+                }
+            },
+            {
+                "entity_number": 45,
+                "name": "solar-panel",
+                "position": {
+                    "x": 269.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 46,
+                "name": "solar-panel",
+                "position": {
+                    "x": 272.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 47,
+                "name": "solar-panel",
+                "position": {
+                    "x": 275.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 48,
+                "name": "solar-panel",
+                "position": {
+                    "x": 278.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 49,
+                "name": "solar-panel",
+                "position": {
+                    "x": 281.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 50,
+                "name": "accumulator",
+                "position": {
+                    "x": 284,
+                    "y": -324
+                }
+            },
+            {
+                "entity_number": 51,
+                "name": "solar-panel",
+                "position": {
+                    "x": 287.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 52,
+                "name": "solar-panel",
+                "position": {
+                    "x": 290.5,
+                    "y": -324.5
+                }
+            },
+            {
+                "entity_number": 53,
+                "name": "accumulator",
+                "position": {
+                    "x": 293,
+                    "y": -324
+                }
+            },
+            {
+                "entity_number": 54,
+                "name": "accumulator",
+                "position": {
+                    "x": 259,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 55,
+                "name": "accumulator",
+                "position": {
+                    "x": 261,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 56,
+                "name": "accumulator",
+                "position": {
+                    "x": 263,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 57,
+                "name": "accumulator",
+                "position": {
+                    "x": 265,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 58,
+                "name": "accumulator",
+                "position": {
+                    "x": 267,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 59,
+                "name": "accumulator",
+                "position": {
+                    "x": 269,
+                    "y": -322
+                }
+            },
+            {
+                "entity_number": 60,
+                "name": "solar-panel",
+                "position": {
+                    "x": 271.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 61,
+                "name": "solar-panel",
+                "position": {
+                    "x": 274.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 62,
+                "name": "solar-panel",
+                "position": {
+                    "x": 277.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 63,
+                "name": "solar-panel",
+                "position": {
+                    "x": 280.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 64,
+                "name": "solar-panel",
+                "position": {
+                    "x": 283.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 65,
+                "name": "solar-panel",
+                "position": {
+                    "x": 286.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 66,
+                "name": "solar-panel",
+                "position": {
+                    "x": 289.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 67,
+                "name": "solar-panel",
+                "position": {
+                    "x": 292.5,
+                    "y": -321.5
+                }
+            },
+            {
+                "entity_number": 68,
+                "name": "accumulator",
+                "position": {
+                    "x": 259,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 69,
+                "name": "accumulator",
+                "position": {
+                    "x": 261,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 70,
+                "name": "accumulator",
+                "position": {
+                    "x": 263,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 71,
+                "name": "accumulator",
+                "position": {
+                    "x": 265,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 72,
+                "name": "accumulator",
+                "position": {
+                    "x": 267,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 73,
+                "name": "accumulator",
+                "position": {
+                    "x": 269,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 74,
+                "name": "accumulator",
+                "position": {
+                    "x": 271,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 75,
+                "name": "accumulator",
+                "position": {
+                    "x": 273,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 76,
+                "name": "accumulator",
+                "position": {
+                    "x": 275,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 77,
+                "name": "accumulator",
+                "position": {
+                    "x": 277,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 78,
+                "name": "accumulator",
+                "position": {
+                    "x": 279,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 79,
+                "name": "accumulator",
+                "position": {
+                    "x": 281,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 80,
+                "name": "accumulator",
+                "position": {
+                    "x": 283,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 81,
+                "name": "accumulator",
+                "position": {
+                    "x": 285,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 82,
+                "name": "accumulator",
+                "position": {
+                    "x": 287,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 83,
+                "name": "accumulator",
+                "position": {
+                    "x": 289,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 84,
+                "name": "accumulator",
+                "position": {
+                    "x": 291,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 85,
+                "name": "accumulator",
+                "position": {
+                    "x": 293,
+                    "y": -319
+                }
+            },
+            {
+                "entity_number": 86,
+                "name": "accumulator",
+                "position": {
+                    "x": 259,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 87,
+                "name": "accumulator",
+                "position": {
+                    "x": 261,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 88,
+                "name": "accumulator",
+                "position": {
+                    "x": 263,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 89,
+                "name": "accumulator",
+                "position": {
+                    "x": 265,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 90,
+                "name": "accumulator",
+                "position": {
+                    "x": 267,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 91,
+                "name": "accumulator",
+                "position": {
+                    "x": 269,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 92,
+                "name": "accumulator",
+                "position": {
+                    "x": 271,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 93,
+                "name": "accumulator",
+                "position": {
+                    "x": 273,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 94,
+                "name": "accumulator",
+                "position": {
+                    "x": 275,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 95,
+                "name": "accumulator",
+                "position": {
+                    "x": 277,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 96,
+                "name": "accumulator",
+                "position": {
+                    "x": 279,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 97,
+                "name": "accumulator",
+                "position": {
+                    "x": 281,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 98,
+                "name": "accumulator",
+                "position": {
+                    "x": 283,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 99,
+                "name": "accumulator",
+                "position": {
+                    "x": 285,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 100,
+                "name": "accumulator",
+                "position": {
+                    "x": 287,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 101,
+                "name": "accumulator",
+                "position": {
+                    "x": 289,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 102,
+                "name": "accumulator",
+                "position": {
+                    "x": 291,
+                    "y": -312
+                }
+            },
+            {
+                "entity_number": 103,
+                "name": "substation",
+                "position": {
+                    "x": 267,
+                    "y": -308
+                },
+                "neighbours": [
+                    38,
+                    104
+                ]
+            },
+            {
+                "entity_number": 104,
+                "name": "substation",
+                "position": {
+                    "x": 285,
+                    "y": -308
+                },
+                "neighbours": [
+                    103,
+                    39
+                ]
+            }
+        ],
+        "item": "blueprint",
+        "version": 281479278297089
+    }
+}
