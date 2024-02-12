@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\GnuWin32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +127,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\GnuWin32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,26 +144,12 @@
     <ClCompile Include="Json.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="zlib123\adler32.c" />
-    <ClCompile Include="zlib123\compress.c" />
-    <ClCompile Include="zlib123\crc32.c" />
-    <ClCompile Include="zlib123\deflate.c" />
-    <ClCompile Include="zlib123\gzio.c" />
-    <ClCompile Include="zlib123\infback.c" />
-    <ClCompile Include="zlib123\inffast.c" />
-    <ClCompile Include="zlib123\inflate.c" />
-    <ClCompile Include="zlib123\inftrees.c" />
-    <ClCompile Include="zlib123\trees.c" />
-    <ClCompile Include="zlib123\uncompr.c" />
-    <ClCompile Include="zlib123\zutil.c" />
-    <ClCompile Include="zpipe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveSurfaceMap.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="zpipe.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
