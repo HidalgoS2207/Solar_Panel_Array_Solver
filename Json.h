@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "zpipe.h"
 
 #include <string>
 
@@ -19,7 +20,7 @@ namespace Output
 		0,  26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
 		41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 	};
-
+	
 	class Json
 	{
 	public:
@@ -29,11 +30,6 @@ namespace Output
 		void insertEntity(const Entities::Entity* const entity);
 		void saveToFile(const char* fileName);
 	private:
-		const std::string base64_chars =
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"abcdefghijklmnopqrstuvwxyz"
-			"0123456789+/";
-
 		std::string base64_encode(const void* data, const size_t& len);
 
 		std::string outputStr;
