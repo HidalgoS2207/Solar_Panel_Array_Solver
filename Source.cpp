@@ -10,11 +10,6 @@
 
 int main(int argc, char* argv[])
 {
-	//delete
-	Output::Json json;
-	json.saveToFile("test");
-	//delete
-
 	CalculationsUtility::SolverSettings solverSettings;
 
 	//! Solar Panels
