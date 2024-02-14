@@ -141,12 +141,14 @@
   <ItemGroup>
     <ClCompile Include="ActiveSurfaceMap.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Json.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveSurfaceMap.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Json.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

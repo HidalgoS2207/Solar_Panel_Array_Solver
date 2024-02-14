@@ -5,8 +5,12 @@
 
 namespace Entities
 {
+	using uintPair = std::pair<unsigned int,unsigned int>;
+
 	const unsigned int SolarPanelSideNumTiles = 3;
 	const unsigned int AccumulatorSideNumTiles = 2;
+	const unsigned int RoboportSideNumTiles = 4;
+	const unsigned int RadarSideNumTiles = 2;
 
 	//This constant should allow to separate influence areas without the risk of leaving a one tile gap with no entities
 	const unsigned int maxGapBetweenPolesInfluenceArea = (SolarPanelSideNumTiles);
@@ -15,7 +19,9 @@ namespace Entities
 	{
 		SOLAR_PANEL,
 		ACCUMULATOR,
-		ELECTRIC_POLE
+		ELECTRIC_POLE,
+		ROBOPORT,
+		RADAR
 	};
 
 	enum ELECTRIC_POLE_TYPE
@@ -133,6 +139,12 @@ namespace Entities
 			case Entities::ENTITY_TYPE::ELECTRIC_POLE:
 				return "Electric Pole";
 				break;
+			case Entities::ENTITY_TYPE::ROBOPORT:
+				return "Roboport";
+				break;
+			case Entities::ENTITY_TYPE::RADAR:
+				return "Radar";
+				break;
 			default:
 				//IOUtil::Asserts::assertMessageFormatted(false, "Cannot localize entity type of type %d", entityType);
 				return "";
@@ -154,10 +166,10 @@ namespace Entities
 	public:
 		~ElectricPole();
 
-		unsigned int getInfluenceTiles();
-		double getWireTilesDistance();
-		int getInfluenceArea();
-		ELECTRIC_POLE_TYPE getElectricPoleType();
+		unsigned int getInfluenceTiles() const;
+		double getWireTilesDistance() const;
+		int getInfluenceArea() const;
+		ELECTRIC_POLE_TYPE getElectricPoleType() const;
 	protected:
 		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType);
 	private:
@@ -204,6 +216,30 @@ namespace Entities
 		Accumulator();
 		~Accumulator();
 	private:
+	};
+
+	class Roboport : public Entity
+	{
+	public:
+		Roboport();
+		~Roboport();
+
+		uintPair getConstructionArea() const;
+		uintPair getSupplyArea() const;
+	private:
+		uintPair constructionArea;
+		uintPair supplyArea;
+	};
+
+	class Radar : public Entity
+	{
+	public:
+		Radar();
+		~Radar();
+
+		uintPair getNearbyPulseScanArea() const;
+	private:
+		uintPair nearbyPulseScanArea;
 	};
 }
 

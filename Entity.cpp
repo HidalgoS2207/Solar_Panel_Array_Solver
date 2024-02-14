@@ -55,7 +55,7 @@ void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosi
 
 Entities::SolarPanel::SolarPanel()
 	:
-	Entity({ true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 }, ENTITY_TYPE::SOLAR_PANEL)
+	Entity({ true,true,true,true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 }, ENTITY_TYPE::SOLAR_PANEL)
 {}
 
 Entities::SolarPanel::~SolarPanel()
@@ -73,22 +73,22 @@ Entities::ElectricPole::ElectricPole(const std::vector<bool> tilesMap, std::pair
 Entities::ElectricPole::~ElectricPole()
 {}
 
-unsigned int Entities::ElectricPole::getInfluenceTiles()
+unsigned int Entities::ElectricPole::getInfluenceTiles() const
 {
 	return influenceTiles;
 }
 
-double Entities::ElectricPole::getWireTilesDistance()
+double Entities::ElectricPole::getWireTilesDistance() const
 {
 	return wireTilesDistance;
 }
 
-int Entities::ElectricPole::getInfluenceArea()
+int Entities::ElectricPole::getInfluenceArea() const
 {
 	return (influenceTiles * influenceTiles) - (tilesDistribution.first * tilesDistribution.second);
 }
 
-Entities::ELECTRIC_POLE_TYPE Entities::ElectricPole::getElectricPoleType()
+Entities::ELECTRIC_POLE_TYPE Entities::ElectricPole::getElectricPoleType() const
 {
 	return electricPoleType;
 }
@@ -160,4 +160,36 @@ Entities::Accumulator::Accumulator()
 Entities::Accumulator::~Accumulator()
 {}
 
+Entities::Roboport::Roboport()
+	:
+	Entity({true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true},{RoboportSideNumTiles,RoboportSideNumTiles},{0,0},ENTITY_TYPE::ROBOPORT),
+	supplyArea({50,50}),
+	constructionArea({110,110})
+{}
 
+Entities::Roboport::~Roboport()
+{}
+
+Entities::uintPair Entities::Roboport::getConstructionArea() const
+{
+	return constructionArea;
+}
+
+Entities::uintPair Entities::Roboport::getSupplyArea() const
+{
+	return supplyArea;
+}
+
+Entities::Radar::Radar()
+	:
+	Entity({true,true,true,true},{RadarSideNumTiles,RadarSideNumTiles},{0,0},ENTITY_TYPE::RADAR),
+	nearbyPulseScanArea({224,224})
+{}
+
+Entities::Radar::~Radar()
+{}
+
+Entities::uintPair Entities::Radar::getNearbyPulseScanArea() const
+{
+	return nearbyPulseScanArea;
+}
