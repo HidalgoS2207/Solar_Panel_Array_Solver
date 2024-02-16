@@ -4,12 +4,14 @@ const TilesMapping::TilesRepresentationMap TilesMapping::TileRepresentationMappi
 
 TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByPosition(const uintPairCoordinates coordinates)
 {
-	if (tilesByCoordinate.find(coordinates) == tilesByCoordinate.end()) 
+	TilesMapping::ActiveSurfaceMap::TilesByCoordinate::iterator tilesByCoordinateIt = tilesByCoordinate.find(coordinates);
+
+	if (tilesByCoordinateIt == tilesByCoordinate.end())
 	{ 
 		IOUtil::Asserts::assertMessageFormatted(!verboseExecution, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
 		return nullptr; 
 	}
-	return tilesByCoordinate[coordinates];
+	return (*tilesByCoordinateIt).second;
 }
 
 TilesMapping::ActiveSurfaceMap::ActiveSurfaceMap(const uintPairCoordinates tilesSize)
@@ -79,7 +81,7 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 		return setAssertStatement("TilesMapping::ActiveSurfaceMap::insertElectricPoles - Electric Poles Array is empty!");
 	}
 
-	//! Rigth now all electric poles are uniform and the system doesn't manage combination of different ones
+	//! Right now all electric poles are uniform and the system doesn't manage combination of different ones
 	//! It is safe to extract the type from the first element of the array
 	Entities::ELECTRIC_POLE_TYPE electricPoleType = electricPoles.front()->getElectricPoleType();
 

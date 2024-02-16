@@ -70,7 +70,8 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
 	/*Debug vars*/
-	const bool verboseExecution = false;
+	const bool verboseExecution = true;
+	const unsigned int printProgressionVal = 100;
 	/*----------*/
 
 	using EntitiesPtrList = std::vector<Entities::Entity*>;
@@ -97,16 +98,17 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	auto updateTilesInfo = [](Entities::Entity* entityPtr, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates, uintPairCoordinates pos)
 		{
 			uintPairCoordinates entitySize = entityPtr->getTilesDistribution();
+			TilesInfoByTileCoordinates::iterator tilesInfoByTileCoordinatesIt;
 
 			for (int i = 0; i < entitySize.second; i++)
 			{
 				for (int j = 0; j < entitySize.first; j++)
 				{
-					if (tilesInfoByTileCoordinates.find(pos) != tilesInfoByTileCoordinates.end())
+					tilesInfoByTileCoordinatesIt = tilesInfoByTileCoordinates.find(pos);
+					if (tilesInfoByTileCoordinatesIt != tilesInfoByTileCoordinates.end())
 					{
-						tilesInfoByTileCoordinates[pos]->isAvailable = false;
+						(tilesInfoByTileCoordinatesIt)->second->isAvailable = false;
 					}
-
 					pos.first++;
 				}
 				pos.second++;
@@ -231,7 +233,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 					setTilesInfoList(tilesInfoList);
 					setGeneralistOrder(entitiesToPlace);
 					iteration++;
-					IOUtil::Asserts::assertMessageFormatted((!reDistribute || !verboseExecution), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
+					IOUtil::Asserts::assertMessageFormatted(!(reDistribute && verboseExecution && !(iteration%printProgressionVal)), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
 					break;
 				}
 			}

@@ -273,6 +273,8 @@ namespace CalculationsUtility
 		unsigned int numPoles;
 		unsigned int numSolarPanels;
 		unsigned int numAccumulators;
+		unsigned int numRoboports;
+		unsigned int numRadars;
 
 	private:
 		void initializeData()
@@ -284,6 +286,8 @@ namespace CalculationsUtility
 			numPoles = 0;
 			numSolarPanels = 0;
 			numAccumulators = 0;
+			numRoboports = 0;
+			numRadars = 0;
 		}
 	};
 
