@@ -170,12 +170,16 @@ namespace Entities
 		double getWireTilesDistance() const;
 		int getInfluenceArea() const;
 		ELECTRIC_POLE_TYPE getElectricPoleType() const;
+
+		void setNeighbour(ElectricPole* electricPole);
+		void removeNeighbour(ElectricPole* electricPole);
 	protected:
 		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType);
 	private:
 		const unsigned int influenceTiles;
 		const double wireTilesDistance;
 		const ELECTRIC_POLE_TYPE electricPoleType;
+		std::vector<ElectricPole*> neighbours;
 	};
 
 	class SmallElectricPole : public ElectricPole

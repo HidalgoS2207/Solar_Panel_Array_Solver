@@ -7,9 +7,9 @@ TilesMapping::ActiveSurfaceMap::Tile* TilesMapping::ActiveSurfaceMap::getTileByP
 	TilesMapping::ActiveSurfaceMap::TilesByCoordinate::iterator tilesByCoordinateIt = tilesByCoordinate.find(coordinates);
 
 	if (tilesByCoordinateIt == tilesByCoordinate.end())
-	{ 
+	{
 		IOUtil::Asserts::assertMessageFormatted(!verboseExecution, "TilesMapping::ActiveSurfaceMap::getTileByPosition - Tile not found at [%d - %d]", coordinates.first, coordinates.second);
-		return nullptr; 
+		return nullptr;
 	}
 	return (*tilesByCoordinateIt).second;
 }
@@ -50,12 +50,13 @@ bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, cons
 
 	if (checkTilesAvailability(entity->getTilesDistribution(), coor))
 	{
+		entity->setPosition({ coor.first,coor.second });
+
 		for (int i = coor.second; i < entity->getTilesDistribution().second + coor.second; i++)
 		{
 			for (int j = coor.first; j < entity->getTilesDistribution().first + coor.first; j++)
 			{
 				Tile* tile = this->getTileByPosition({ j,i });
-				if (!entity->getIsPlaced()) { entity->setPosition({ j,i }); }
 				tile->entity = entity;
 			}
 		}
@@ -94,6 +95,26 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 	unsigned int posY = tilesInitialOffset;
 
 	const unsigned int distanceBetweenPoles = CalculationsUtility::Solver::calculateMaxDistanceBetweenPoles(electricPoleType);
+
+	auto setNeighbours = [&](Entities::ElectricPole* electricPole, uintPairCoordinates startPos) -> bool
+		{
+			Tile* tileEval[] = {
+				getTileByPosition({ startPos.first - distanceBetweenPoles,startPos.second }),
+				getTileByPosition({ startPos.first + distanceBetweenPoles,startPos.second }),
+				getTileByPosition({ startPos.first ,startPos.second - distanceBetweenPoles }),
+				getTileByPosition({ startPos.first ,startPos.second + distanceBetweenPoles }),
+			};
+
+			for (int i = 0; i < 4; i++)
+			{
+				if (tileEval[i] == nullptr) { continue; }
+				if (tileEval[i]->entity == nullptr) { continue; }
+				if (tileEval[i]->entity->getEntityType() != Entities::ENTITY_TYPE::ELECTRIC_POLE) { continue; }
+				electricPole->setNeighbour(dynamic_cast<Entities::ElectricPole*>(tileEval[i]->entity));
+			}
+
+			return true;
+		};
 
 	auto setElectricPole = [&](Entities::ElectricPole* electricPole, uintPairCoordinates startPos) -> bool
 		{
@@ -154,18 +175,34 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 			return electricPolesPlaced;
 		};
 
+	auto advancePolesPosition = [&]() -> bool
+		{
+			posX += distanceBetweenPoles;
+			if (posX > xSize)
+			{
+				posX = tilesInitialOffset;
+				posY += distanceBetweenPoles;
+				return !(posY > ySize);
+			}
+		};
+
 	for (auto& electricPole : electricPoles)
 	{
 		if (!setElectrifiedArea({ posX - tilesInitialOffset,posY - tilesInitialOffset })) { break; };
 		if (!setElectricPole(electricPole, { posX,posY })) { break; }
 
-		posX += distanceBetweenPoles;
-		if (posX > xSize)
-		{
-			posX = tilesInitialOffset;
-			posY += distanceBetweenPoles;
-			if (posY > ySize) { break; }
-		}
+		if (!advancePolesPosition()) { break; }
+	}
+
+	posX = posY = tilesInitialOffset;
+
+	if (!electricPolesPlaced) { return false; }
+
+	for (auto& electricPole : electricPoles)
+	{
+		if (!setNeighbours(electricPole, { posX,posY })) { break; }
+
+		if (!advancePolesPosition()) { break; }
 	}
 
 	return electricPolesPlaced;

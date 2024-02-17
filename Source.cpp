@@ -6,7 +6,6 @@
 
 #include "Entity.h"
 #include "Util.h"
-#include "Json.h"
 
 int main(int argc, char* argv[])
 {
@@ -18,7 +17,7 @@ int main(int argc, char* argv[])
 	solverSettings.electricPoleType = static_cast<Entities::ELECTRIC_POLE_TYPE>(
 		IOUtil::KbdIO::userInputPrompt(
 			"Electric Pole type preference:",
-			{"Small","Medium","Big","Substation"},
+			{ "Small","Medium","Big","Substation" },
 			"Error. Out of range.\n",
 			{ static_cast<int>(Entities::ELECTRIC_POLE_TYPE::SMALL),static_cast<int>(Entities::ELECTRIC_POLE_TYPE::SUBSTATION) }
 		)
@@ -28,7 +27,7 @@ int main(int argc, char* argv[])
 	solverSettings.polesArrangementMethod = static_cast<CalculationsUtility::PolesArrangementMethod>(
 		IOUtil::KbdIO::userInputPrompt(
 			"Poles Arrangement preffered method",
-			{"Linear","Rectangular"},
+			{ "Linear","Rectangular" },
 			"Error. Out of range.\n",
 			{ static_cast<int>(CalculationsUtility::PolesArrangementMethod::LINEAR),static_cast<int>(CalculationsUtility::PolesArrangementMethod::RECTANGULAR) }
 		)
@@ -66,12 +65,12 @@ int main(int argc, char* argv[])
 	}
 
 	std::vector<Entities::ElectricPole*> electricPoles;
-	CalculationsUtility::Solver::instantiateEntities(solverSettings.numPoles, electricPoles,solverSettings.electricPoleType);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numPoles, electricPoles, solverSettings.electricPoleType);
 
 	solverSettings.entitiesArrangementStrategy = static_cast<CalculationsUtility::EntityArrangementStrategy>(
 		IOUtil::KbdIO::userInputPrompt(
 			"Entities Arrangement Strategy:",
-			{"Radial In First","Radial Out First","Linear Horizontal","Linear Vertical","Random","Alternate Vertical","Alternate Horizontal"},
+			{ "Radial In First","Radial Out First","Linear Horizontal","Linear Vertical","Random","Alternate Vertical","Alternate Horizontal" },
 			"Error. Out of range.\n",
 			{ static_cast<int>(CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST),static_cast<int>(CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR) }
 		)
@@ -79,15 +78,26 @@ int main(int argc, char* argv[])
 	solverSettings.entitiesSpawnStrategy = static_cast<CalculationsUtility::EntitySpawnStrategy>(
 		IOUtil::KbdIO::userInputPrompt(
 			"Entites Spawm Strategy:",
-			{"Full Random","Weighted Random","Full Sequential","Weighted Sequential"},
+			{ "Full Random","Weighted Random","Full Sequential","Weighted Sequential" },
 			"Error. Out of range.\n",
 			{ static_cast<int>(CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM),static_cast<int>(CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL) }
 		)
 		);
 
-	CalculationsUtility::Solver::calculateArrangement( solverSettings, solarPanels, accumulators, electricPoles);
+	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
 
 	CalculationsUtility::Solver::destroyEntities(electricPoles);
+
+	unsigned int exitProgramPrompt = 0;
+	while (!exitProgramPrompt)
+	{
+		IOUtil::KbdIO::userInputPrompt(
+			"Exit?:",
+			{ "Stay","Exit" },
+			"Error. Out of range.\n",
+			{ 0,1 }
+			);
+	}
 
 	return 0;
 }

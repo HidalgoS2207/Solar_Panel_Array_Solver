@@ -93,6 +93,37 @@ Entities::ELECTRIC_POLE_TYPE Entities::ElectricPole::getElectricPoleType() const
 	return electricPoleType;
 }
 
+void Entities::ElectricPole::setNeighbour(ElectricPole* electricPole)
+{
+	for (ElectricPole* neighbour : neighbours)
+	{
+		if (neighbour == electricPole)
+		{
+			return;
+		}
+	}
+	neighbours.push_back(electricPole);
+}
+
+void Entities::ElectricPole::removeNeighbour(ElectricPole* electricPole)
+{
+	std::vector<ElectricPole*>::iterator neighbourIt = neighbours.begin();
+	std::vector<ElectricPole*>::iterator neighbourToEraseIt;
+
+	for (; neighbourIt != neighbours.end(); neighbourIt++)
+	{
+		if (*neighbourIt == electricPole)
+		{
+			neighbourToEraseIt = neighbourIt;
+			*neighbourToEraseIt = nullptr;
+			break;
+		}
+	}
+
+	neighbours.erase(neighbourToEraseIt);
+	neighbours.shrink_to_fit();
+}
+
 Entities::SmallElectricPole::SmallElectricPole()
 	:
 	ElectricPole
@@ -162,9 +193,9 @@ Entities::Accumulator::~Accumulator()
 
 Entities::Roboport::Roboport()
 	:
-	Entity({true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true},{RoboportSideNumTiles,RoboportSideNumTiles},{0,0},ENTITY_TYPE::ROBOPORT),
-	supplyArea({50,50}),
-	constructionArea({110,110})
+	Entity({ true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true }, { RoboportSideNumTiles,RoboportSideNumTiles }, { 0,0 }, ENTITY_TYPE::ROBOPORT),
+	supplyArea({ 50,50 }),
+	constructionArea({ 110,110 })
 {}
 
 Entities::Roboport::~Roboport()
@@ -182,8 +213,8 @@ Entities::uintPair Entities::Roboport::getSupplyArea() const
 
 Entities::Radar::Radar()
 	:
-	Entity({true,true,true,true},{RadarSideNumTiles,RadarSideNumTiles},{0,0},ENTITY_TYPE::RADAR),
-	nearbyPulseScanArea({224,224})
+	Entity({ true,true,true,true }, { RadarSideNumTiles,RadarSideNumTiles }, { 0,0 }, ENTITY_TYPE::RADAR),
+	nearbyPulseScanArea({ 224,224 })
 {}
 
 Entities::Radar::~Radar()
