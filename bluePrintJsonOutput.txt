@@ -1,0 +1,1 @@
+{"blueprint":{"icons":[{"signal":{"type":"item","name":"solar-panel"},"index":1},{"signal":{"type":"item","name":"accumulator"},"index":2}],}

@@ -6,9 +6,13 @@
 
 #include "Entity.h"
 #include "Util.h"
+#include "Json.h"
 
 int main(int argc, char* argv[])
 {
+	using EntityPtrList = std::vector<Entities::Entity*>;
+	EntityPtrList entityList;
+
 	CalculationsUtility::SolverSettings solverSettings;
 
 	//! Solar Panels
@@ -86,19 +90,14 @@ int main(int argc, char* argv[])
 
 	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
 
+	//Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
+	//Entities::Entity::insertToEntityPtrList(accumulators, entityList);
+	//Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
+
+	Output::Json json;
+	json.saveToFile("bluePrintJsonOutput.txt", entityList);
+
 	CalculationsUtility::Solver::destroyEntities(electricPoles);
-
-	unsigned int exitProgramPrompt = 0;
-	while (!exitProgramPrompt)
-	{
-		IOUtil::KbdIO::userInputPrompt(
-			"Exit?:",
-			{ "Stay","Exit" },
-			"Error. Out of range.\n",
-			{ 0,1 }
-			);
-	}
-
 	return 0;
 }
 

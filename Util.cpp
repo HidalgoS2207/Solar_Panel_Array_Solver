@@ -193,9 +193,9 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
+	EntitiesPtrList entitiesToPlace;
 	if (operationSucess)
 	{
-		EntitiesPtrList entitiesToPlace;
 		setEntitiesGeneralList(solarPanels, entitiesToPlace);
 		setEntitiesGeneralList(accumulators, entitiesToPlace);
 
@@ -246,6 +246,6 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 
 		std::cout << "\n\nUtilized space : " << ((1.f - (static_cast<float>(freeSurface) / static_cast<float>(totalSurface))) * 100.f) << "%\n";
 		
-		activeSurfaceMap.printSurface();
+		activeSurfaceMap.printSurface(); 
 	}
 }
