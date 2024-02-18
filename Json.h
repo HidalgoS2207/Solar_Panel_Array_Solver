@@ -24,8 +24,10 @@ namespace Output
 		void saveToFile(const char* fileName, const std::vector<Entities::Entity*>& entityList);
 	private:
 		void insertEntity(const Entities::Entity* const entity, const unsigned int entityNumber);
-		std::string outputStr;
+		
+		std::map<const Entities::Entity* const, unsigned int> entityNumberByEntityPtr;
 
+		std::string outputStr;
 		std::string genericEntityTemplate;
 		std::string electricPoleTemplate;
 	};

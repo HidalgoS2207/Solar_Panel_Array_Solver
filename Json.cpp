@@ -17,6 +17,8 @@ Output::Json::~Json() {}
 
 void Output::Json::insertEntity(const Entities::Entity* const entity, const unsigned int entityNumber)
 {
+	entityNumberByEntityPtr[entity] = entityNumber;
+
 	std::string entiyNumberStr = std::to_string(entityNumber);
 	std::string entityNameStr = entity->getEntityName();
 	std::string entityXposStr = std::to_string(static_cast<float>(entity->getPosition().first) + (static_cast<float>(entity->getTilesDistribution().first) / 2.f));
