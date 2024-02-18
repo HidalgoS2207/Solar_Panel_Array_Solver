@@ -18,6 +18,10 @@ namespace Output
 		const char* entityXPosOcurrence;
 		const char* entityYPosOcurrence;
 		const char* footerVersionNumberOcurrence;
+
+		const unsigned int entityInsertionOffset;
+		const unsigned int neighborInsertionOffset;
+		const unsigned int footerInsertionOffset;
 	public:
 		Json();
 		~Json();

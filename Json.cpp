@@ -6,7 +6,10 @@ Output::Json::Json()
 	entityNameOcurrence("@ENTITY_NAME"),
 	entityXPosOcurrence("@ENTITY_X_POS"),
 	entityYPosOcurrence("@ENTITY_Y_POS"),
-	footerVersionNumberOcurrence("@FOOTER_VERSION_NUMBER")
+	footerVersionNumberOcurrence("@FOOTER_VERSION_NUMBER"),
+	entityInsertionOffset(4),
+	neighborInsertionOffset(7),
+	footerInsertionOffset(2)
 {
 	outputStr.assign("{\"blueprint\":{\"icons\":[{\"signal\":{\"type\":\"item\",\"name\":\"solar-panel\"},\"index\":1},{\"signal\":{\"type\":\"item\",\"name\":\"accumulator\"},\"index\":2}],\"entities\":[],}}");
 
@@ -24,7 +27,7 @@ void Output::Json::insertEntity(Entities::Entity* entity, const unsigned int ent
 	std::string entityXposStr = std::to_string(static_cast<float>(entity->getPosition().first) + (static_cast<float>(entity->getTilesDistribution().first) / 2.f));
 	std::string entityYposStr = std::to_string(static_cast<float>(entity->getPosition().second) + (static_cast<float>(entity->getTilesDistribution().second) / 2.f));
 
-	std::string::iterator insPos = outputStr.end() - 4;
+	std::string::iterator insPos = outputStr.end() - entityInsertionOffset;
 
 	auto replaceGenericOcurrences = [&]()
 		{
@@ -48,7 +51,7 @@ void Output::Json::insertEntity(Entities::Entity* entity, const unsigned int ent
 		{
 			Entities::ElectricPole* electricPolePtr = dynamic_cast<Entities::ElectricPole*>(entity);
 
-			insPos = outputStr.end() - 7;
+			insPos = outputStr.end() - neighborInsertionOffset;
 
 			for (int i = 0; i < electricPolePtr->getNeighbours().size(); i++)
 			{
@@ -90,7 +93,7 @@ void Output::Json::insertFooter()
 		outputStr.erase(commaPos, 1);
 	}
 
-	std::string::iterator insPos = outputStr.end() - 2;
+	std::string::iterator insPos = outputStr.end() - footerInsertionOffset;
 	std::string footerVersionNumber = std::to_string(versionNum);
 
 	outputStr.insert(insPos, footerTemplate.begin(), footerTemplate.end());
