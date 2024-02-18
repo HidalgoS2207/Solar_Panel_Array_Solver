@@ -295,11 +295,11 @@ namespace CalculationsUtility
 	{
 	private:
 		template<typename E>
-		static inline void setEntitiesGeneralList(std::vector<E>& listIn, std::vector<Entities::Entity*>& listOut)
+		static inline void setEntitiesGeneralList(std::vector<E*>& listIn, std::vector<Entities::Entity*>& listOut)
 		{
-			for (E& elemIn : listIn)
+			for (E* elemIn : listIn)
 			{
-				listOut.push_back(dynamic_cast<Entities::Entity*>(&elemIn));
+				listOut.push_back(dynamic_cast<Entities::Entity*>(elemIn));
 			}
 		}
 
@@ -333,11 +333,12 @@ namespace CalculationsUtility
 		}
 
 		template<typename T>
-		static void instantiateEntities(unsigned int numEntities, std::vector<T>& entities)
+		static void instantiateEntities(unsigned int numEntities, std::vector<T*>& entities)
 		{
 			for (unsigned int i = 0; i < numEntities; i++)
 			{
-				entities.emplace_back();
+				T* entityPtr = new T();
+				entities.push_back(entityPtr);
 			}
 		}
 
@@ -381,21 +382,22 @@ namespace CalculationsUtility
 			}
 		}
 
-		static void destroyEntities(std::vector<Entities::ElectricPole*>& electricPoles)
+		template<typename T>
+		static void destroyEntities(std::vector<T*>& entityList)
 		{
-			for (auto& electricPole : electricPoles)
+			for (auto entityPtr : entityList)
 			{
-				delete electricPole;
+				delete entityPtr;
 			}
 		}
 
 		template<typename T>
-		static unsigned int calculateOccupiedSurface(std::vector<T>& entities)
+		static unsigned int calculateOccupiedSurface(std::vector<T*>& entities)
 		{
 			unsigned int ret = 0;
-			for (T& entity : entities)
+			for (T* entity : entities)
 			{
-				const std::pair<unsigned int, unsigned int>& tilesDist = entity.getTilesDistribution();
+				const std::pair<unsigned int, unsigned int>& tilesDist = entity->getTilesDistribution();
 
 				ret += (tilesDist.first * tilesDist.second);
 			}
@@ -405,7 +407,7 @@ namespace CalculationsUtility
 
 		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
 		static std::pair<unsigned int, unsigned int> calculateSidesSize(const SolverSettings& solverSettings);
-		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
+		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
 	};
 }
 

@@ -14,6 +14,7 @@ namespace Output
 	{
 	private:
 		const char* entityNumOcurrence;
+		const char* entityNameOcurrence;
 		const char* entityXPosOcurrence;
 		const char* entityYPosOcurrence;
 	public:

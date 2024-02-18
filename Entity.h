@@ -5,7 +5,7 @@
 
 namespace Entities
 {
-	using uintPair = std::pair<unsigned int,unsigned int>;
+	using uintPair = std::pair<unsigned int, unsigned int>;
 
 	const unsigned int SolarPanelSideNumTiles = 3;
 	const unsigned int AccumulatorSideNumTiles = 2;
@@ -95,8 +95,8 @@ namespace Entities
 		const std::pair<unsigned int, unsigned int>& getTilesDistribution() const;
 		const std::pair<unsigned int, unsigned int>& getPosition() const;
 		ENTITY_TYPE getEntityType() const;
-		const char* getEntityTypeStr() const;
 		const bool getIsPlaced() const;
+		const char* getEntityName() const;
 
 		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
 
@@ -107,14 +107,24 @@ namespace Entities
 				entity->resetEntityPosition();
 			}
 		}
+
+		template<typename T>
+		inline static void insertToEntityPtrList(std::vector<T*>& inList, std::vector<Entity*>& outList)
+		{
+			for (T* inElem : inList)
+			{
+				outList.push_back(dynamic_cast<Entity*>(inElem));
+			}
+		}
 	protected:
-		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType);
+		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType, const char* entityName);
 
 		unsigned int tiles;
 		std::vector<bool> tilesDistMap;
 		std::pair<unsigned int, unsigned int> tilesDistribution;
 		std::pair<unsigned int, unsigned int> position;
-
+		
+		const char* entityName;
 		const ENTITY_TYPE entityType;
 
 		bool isPlaced;
@@ -124,32 +134,6 @@ namespace Entities
 		{
 			this->isPlaced = false;
 			this->position = { 0,0 };
-		}
-
-		static inline const char* localizeEntityType(ENTITY_TYPE entityType)
-		{
-			switch (entityType)
-			{
-			case Entities::ENTITY_TYPE::SOLAR_PANEL:
-				return "Solar Panel";
-				break;
-			case Entities::ENTITY_TYPE::ACCUMULATOR:
-				return "Accumulator";
-				break;
-			case Entities::ENTITY_TYPE::ELECTRIC_POLE:
-				return "Electric Pole";
-				break;
-			case Entities::ENTITY_TYPE::ROBOPORT:
-				return "Roboport";
-				break;
-			case Entities::ENTITY_TYPE::RADAR:
-				return "Radar";
-				break;
-			default:
-				//IOUtil::Asserts::assertMessageFormatted(false, "Cannot localize entity type of type %d", entityType);
-				return "";
-				break;
-			}
 		}
 	};
 
@@ -174,7 +158,7 @@ namespace Entities
 		void setNeighbour(ElectricPole* electricPole);
 		void removeNeighbour(ElectricPole* electricPole);
 	protected:
-		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType);
+		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType, const char* entityName);
 	private:
 		const unsigned int influenceTiles;
 		const double wireTilesDistance;

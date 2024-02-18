@@ -3,14 +3,14 @@
 Output::Json::Json()
 	:
 	entityNumOcurrence("@ENTITY_NUM"),
+	entityNameOcurrence("@ENTITY_NAME"),
 	entityXPosOcurrence("@ENTITY_X_POS"),
 	entityYPosOcurrence("@ENTITY_Y_POS")
-
 {
 	outputStr.assign("{\"blueprint\":{\"icons\":[{\"signal\":{\"type\":\"item\",\"name\":\"solar-panel\"},\"index\":1},{\"signal\":{\"type\":\"item\",\"name\":\"accumulator\"},\"index\":2}],}");
 
-	genericEntityTemplate.assign("{	\"entity_number\":@ENTITY_NUM,\"name\":\"solar-panel\",\"position\":{\"x\":@ENTITY_X_POS,\"y\":@ENTITY_Y_POS}},");
-	electricPoleTemplate.assign("{\"entity_number\":@ENTITY_NUM,\"name\":\"solar-panel\",\"position\":{\"x\":@ENTITY_X_POS,\"y\":@ENTITY_Y_POS}},\"neighbours\":[]},");
+	genericEntityTemplate.assign("{	\"entity_number\":@ENTITY_NUM,\"name\":\"@ENTITY_NAME\",\"position\":{\"x\":@ENTITY_X_POS,\"y\":@ENTITY_Y_POS}},");
+	electricPoleTemplate.assign("{\"entity_number\":@ENTITY_NUM,\"name\":\"@ENTITY_NAME\",\"position\":{\"x\":@ENTITY_X_POS,\"y\":@ENTITY_Y_POS}},\"neighbours\":[]},");
 }
 
 Output::Json::~Json() {}
@@ -18,6 +18,7 @@ Output::Json::~Json() {}
 void Output::Json::insertEntity(const Entities::Entity* const entity, const unsigned int entityNumber)
 {
 	std::string entiyNumberStr = std::to_string(entityNumber);
+	std::string entityNameStr = entity->getEntityName();
 	std::string entityXposStr = std::to_string(static_cast<float>(entity->getPosition().first) + (static_cast<float>(entity->getTilesDistribution().first) / 2.f));
 	std::string entityYposStr = std::to_string(static_cast<float>(entity->getPosition().second) + (static_cast<float>(entity->getTilesDistribution().second) / 2.f));
 
@@ -37,6 +38,7 @@ void Output::Json::insertEntity(const Entities::Entity* const entity, const unsi
 	auto replaceGenericOcurrences = [&]()
 		{
 			replaceOccurrence(entityNumOcurrence, entiyNumberStr);
+			replaceOccurrence(entityNameOcurrence, entityNameStr);
 			replaceOccurrence(entityXPosOcurrence, entityXposStr);
 			replaceOccurrence(entityYPosOcurrence, entityYposStr);
 		};

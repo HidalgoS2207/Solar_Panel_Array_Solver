@@ -42,10 +42,10 @@ int main(int argc, char* argv[])
 	std::cout << "\nNumber of Solar Panels = " << solverSettings.numSolarPanels << "\n";
 	std::cout << "Number of Accumulators = " << solverSettings.numAccumulators << "\n";
 
-	std::vector<Entities::SolarPanel> solarPanels;
+	std::vector<Entities::SolarPanel*> solarPanels;
 	CalculationsUtility::Solver::instantiateEntities(solverSettings.numSolarPanels, solarPanels);
 	const int totalOccupiedSurfaceSolarPanels = CalculationsUtility::Solver::calculateOccupiedSurface(solarPanels);
-	std::vector<Entities::Accumulator> accumulators;
+	std::vector<Entities::Accumulator*> accumulators;
 	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators);
 	const int totalOccupiedSurfaceAccumulators = CalculationsUtility::Solver::calculateOccupiedSurface(accumulators);
 
@@ -90,13 +90,15 @@ int main(int argc, char* argv[])
 
 	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
 
-	//Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
-	//Entities::Entity::insertToEntityPtrList(accumulators, entityList);
-	//Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
+	Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
+	Entities::Entity::insertToEntityPtrList(accumulators, entityList);
+	Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
 
 	Output::Json json;
 	json.saveToFile("bluePrintJsonOutput.txt", entityList);
 
+	CalculationsUtility::Solver::destroyEntities(solarPanels);
+	CalculationsUtility::Solver::destroyEntities(accumulators);
 	CalculationsUtility::Solver::destroyEntities(electricPoles);
 	return 0;
 }

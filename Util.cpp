@@ -67,7 +67,7 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 	return ret;
 }
 
-void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel> solarPanels, std::vector<Entities::Accumulator> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
+void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
 	/*Debug vars*/
 	const bool verboseExecution = true;
