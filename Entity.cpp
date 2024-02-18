@@ -89,6 +89,11 @@ int Entities::ElectricPole::getInfluenceArea() const
 	return (influenceTiles * influenceTiles) - (tilesDistribution.first * tilesDistribution.second);
 }
 
+const std::vector<Entities::ElectricPole*> Entities::ElectricPole::getNeighbours()
+{
+	return neighbours;
+}
+
 Entities::ELECTRIC_POLE_TYPE Entities::ElectricPole::getElectricPoleType() const
 {
 	return electricPoleType;

@@ -153,6 +153,7 @@ namespace Entities
 		unsigned int getInfluenceTiles() const;
 		double getWireTilesDistance() const;
 		int getInfluenceArea() const;
+		const std::vector<Entities::ElectricPole*> getNeighbours();
 		ELECTRIC_POLE_TYPE getElectricPoleType() const;
 
 		void setNeighbour(ElectricPole* electricPole);
