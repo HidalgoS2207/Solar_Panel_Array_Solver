@@ -4,13 +4,14 @@ const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPol
 const std::map<Entities::ELECTRIC_POLE_TYPE, unsigned int> Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied = Entities::ElectricPoleAreaOccupiedByType::createMap();
 const std::map<Entities::ELECTRIC_POLE_TYPE, double> Entities::ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance = Entities::ElectricPoleWireTilesDistanceByType::createMap();
 
-Entities::Entity::Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType, const char* entityName)
+Entities::Entity::Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType, const char* entityName, const uint32_t entityId)
 	:
 	tiles(0),
 	tilesDistribution(tilesDistribution),
 	position(position),
 	entityType(entityType),
 	entityName(entityName),
+	entityId(entityId),
 	isPlaced(false)
 {
 	tilesDistMap = tilesMap;
@@ -23,12 +24,12 @@ Entities::Entity::Entity(const std::vector<bool> tilesMap, const std::pair<unsig
 Entities::Entity::~Entity()
 {}
 
-const std::pair<unsigned int, unsigned int>& Entities::Entity::getTilesDistribution() const
+const Entities::uintPair& Entities::Entity::getTilesDistribution() const
 {
 	return tilesDistribution;
 }
 
-const std::pair<unsigned int, unsigned int>& Entities::Entity::getPosition() const
+const Entities::uintPair& Entities::Entity::getPosition() const
 {
 	return position;
 }
@@ -48,23 +49,28 @@ const char* Entities::Entity::getEntityName() const
 	return entityName;
 }
 
-void Entities::Entity::setPosition(std::pair<unsigned int, unsigned int> newPosition)
+const uint32_t Entities::Entity::getEntityId() const
+{
+	return entityId;
+}
+
+void Entities::Entity::setPosition(uintPair newPosition)
 {
 	position = newPosition;
 	isPlaced = true;
 }
 
-Entities::SolarPanel::SolarPanel()
+Entities::SolarPanel::SolarPanel(const uint32_t entityId)
 	:
-	Entity({ true,true,true,true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 }, ENTITY_TYPE::SOLAR_PANEL,"solar-panel")
+	Entity({ true,true,true,true,true,true,true,true,true }, { SolarPanelSideNumTiles,SolarPanelSideNumTiles }, { 0,0 }, ENTITY_TYPE::SOLAR_PANEL, "solar-panel", entityId)
 {}
 
 Entities::SolarPanel::~SolarPanel()
 {}
 
-Entities::ElectricPole::ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType, const char* entityName)
+Entities::ElectricPole::ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType, const char* entityName, const uint32_t entityId)
 	:
-	Entity(tilesMap, tilesDistribution, { 0,0 }, ENTITY_TYPE::ELECTRIC_POLE, entityName),
+	Entity(tilesMap, tilesDistribution, { 0,0 }, ENTITY_TYPE::ELECTRIC_POLE, entityName, entityId),
 	influenceTiles(influenceTiles),
 	wireTilesDistance(wireTilesDistance),
 	electricPoleType(electricPoleType)
@@ -130,7 +136,7 @@ void Entities::ElectricPole::removeNeighbour(ElectricPole* electricPole)
 	neighbours.shrink_to_fit();
 }
 
-Entities::SmallElectricPole::SmallElectricPole()
+Entities::SmallElectricPole::SmallElectricPole(const uint32_t entityId)
 	:
 	ElectricPole
 	(
@@ -139,14 +145,15 @@ Entities::SmallElectricPole::SmallElectricPole()
 		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SMALL),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::SMALL),
 		ELECTRIC_POLE_TYPE::SMALL,
-		"small-electric-pole"
+		"small-electric-pole",
+		entityId
 	)
 {}
 
 Entities::SmallElectricPole::~SmallElectricPole()
 {}
 
-Entities::MediumElectricPole::MediumElectricPole()
+Entities::MediumElectricPole::MediumElectricPole(const uint32_t entityId)
 	:
 	ElectricPole
 	(
@@ -155,14 +162,15 @@ Entities::MediumElectricPole::MediumElectricPole()
 		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::MEDIUM),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::MEDIUM),
 		ELECTRIC_POLE_TYPE::MEDIUM,
-		"medium-electric-pole"
+		"medium-electric-pole",
+		entityId
 	)
 {}
 
 Entities::MediumElectricPole::~MediumElectricPole()
 {}
 
-Entities::BigElectricPole::BigElectricPole()
+Entities::BigElectricPole::BigElectricPole(const uint32_t entityId)
 	:
 	ElectricPole
 	(
@@ -171,14 +179,15 @@ Entities::BigElectricPole::BigElectricPole()
 		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::BIG),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::BIG),
 		ELECTRIC_POLE_TYPE::BIG,
-		"big-electric-pole"
+		"big-electric-pole",
+		entityId
 	)
 {}
 
 Entities::BigElectricPole::~BigElectricPole()
 {}
 
-Entities::SubStation::SubStation()
+Entities::SubStation::SubStation(const uint32_t entityId)
 	:
 	ElectricPole
 	(
@@ -187,24 +196,25 @@ Entities::SubStation::SubStation()
 		ElectricPoleInfluenceTilesByType::ElectricPoleInfluence.at(ELECTRIC_POLE_TYPE::SUBSTATION),
 		ElectricPoleWireTilesDistanceByType::ElectricPoleWireTilesDistance.at(ELECTRIC_POLE_TYPE::SUBSTATION),
 		ELECTRIC_POLE_TYPE::SUBSTATION,
-		"substation"
+		"substation",
+		entityId
 	)
 {}
 
 Entities::SubStation::~SubStation()
 {}
 
-Entities::Accumulator::Accumulator()
+Entities::Accumulator::Accumulator(const uint32_t entityId)
 	:
-	Entity({ true,true,true,true }, { AccumulatorSideNumTiles,AccumulatorSideNumTiles }, { 0,0 }, ENTITY_TYPE::ACCUMULATOR,"accumulator")
+	Entity({ true,true,true,true }, { AccumulatorSideNumTiles,AccumulatorSideNumTiles }, { 0,0 }, ENTITY_TYPE::ACCUMULATOR, "accumulator", entityId)
 {}
 
 Entities::Accumulator::~Accumulator()
 {}
 
-Entities::Roboport::Roboport()
+Entities::Roboport::Roboport(const uint32_t entityId)
 	:
-	Entity({ true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true }, { RoboportSideNumTiles,RoboportSideNumTiles }, { 0,0 }, ENTITY_TYPE::ROBOPORT,"roboport"),
+	Entity({ true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true }, { RoboportSideNumTiles,RoboportSideNumTiles }, { 0,0 }, ENTITY_TYPE::ROBOPORT, "roboport", entityId),
 	supplyArea({ 50,50 }),
 	constructionArea({ 110,110 })
 {}
@@ -222,9 +232,9 @@ Entities::uintPair Entities::Roboport::getSupplyArea() const
 	return supplyArea;
 }
 
-Entities::Radar::Radar()
+Entities::Radar::Radar(const uint32_t entityId)
 	:
-	Entity({ true,true,true,true }, { RadarSideNumTiles,RadarSideNumTiles }, { 0,0 }, ENTITY_TYPE::RADAR,"radar"),
+	Entity({ true,true,true,true }, { RadarSideNumTiles,RadarSideNumTiles }, { 0,0 }, ENTITY_TYPE::RADAR, "radar", entityId),
 	nearbyPulseScanArea({ 224,224 })
 {}
 

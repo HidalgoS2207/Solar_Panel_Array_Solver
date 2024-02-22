@@ -120,6 +120,8 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 		{
 			if (!electricPole->getIsPlaced())
 			{
+				electricPole->setPosition(startPos);
+
 				for (int i = 0; i < electricPoleSideSize; i++)
 				{
 					for (int j = 0; j < electricPoleSideSize; j++)
@@ -128,13 +130,10 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 						if (tile != nullptr)
 						{
 							tile->entity = dynamic_cast<Entities::Entity*>(electricPole);
-							if (!electricPole->getIsPlaced())
-							{
-								electricPole->setPosition(startPos);
-							}
 						}
 						else
 						{
+							Entities::Entity::resetEntity( electricPole );
 							return setAssertStatement("TilesMapping::ActiveSurfaceMap::insertElectricPoles - Tile is nullptr");
 						}
 						startPos.first++;

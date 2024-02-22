@@ -11,6 +11,22 @@
 #include <stdarg.h>
 #include <vector>
 
+namespace EntitiesUtility
+{
+	class EntitiesIdGenerator
+	{
+	public:
+		EntitiesIdGenerator()
+			:
+			entitiesIdsCounter(0)
+		{}
+		~EntitiesIdGenerator() {}
+		uint32_t getEntityId() { return ++entitiesIdsCounter; }
+	private:
+		uint32_t entitiesIdsCounter;
+	};
+}
+
 namespace IOUtil
 {
 	class KbdIO
@@ -333,39 +349,39 @@ namespace CalculationsUtility
 		}
 
 		template<typename T>
-		static void instantiateEntities(unsigned int numEntities, std::vector<T*>& entities)
+		static void instantiateEntities(unsigned int numEntities, std::vector<T*>& entities, EntitiesUtility::EntitiesIdGenerator& entitiesIdGenerator)
 		{
 			for (unsigned int i = 0; i < numEntities; i++)
 			{
-				T* entityPtr = new T();
+				T* entityPtr = new T(entitiesIdGenerator.getEntityId());
 				entities.push_back(entityPtr);
 			}
 		}
 
-		static void instantiateEntities(const unsigned int numEntities, std::vector<Entities::ElectricPole*>& electricPoles, const Entities::ELECTRIC_POLE_TYPE electricPoleType)
+		static void instantiateEntities(const unsigned int numEntities, std::vector<Entities::ElectricPole*>& electricPoles, const Entities::ELECTRIC_POLE_TYPE electricPoleType, EntitiesUtility::EntitiesIdGenerator& entitiesIdGenerator)
 		{
-			auto allocateElectricPoleByType = [](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> Entities::ElectricPole*
+			auto allocateElectricPoleByType = [&](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> Entities::ElectricPole*
 				{
 					switch (electricPoleType)
 					{
 					case Entities::ELECTRIC_POLE_TYPE::SMALL:
 					{
-						Entities::ElectricPole* electricPole = new Entities::SmallElectricPole();
+						Entities::ElectricPole* electricPole = new Entities::SmallElectricPole(entitiesIdGenerator.getEntityId());
 						return electricPole;
 					}
 					case Entities::ELECTRIC_POLE_TYPE::MEDIUM:
 					{
-						Entities::ElectricPole* electricPole = new Entities::MediumElectricPole();
+						Entities::ElectricPole* electricPole = new Entities::MediumElectricPole(entitiesIdGenerator.getEntityId());
 						return electricPole;
 					}
 					case Entities::ELECTRIC_POLE_TYPE::BIG:
 					{
-						Entities::ElectricPole* electricPole = new Entities::BigElectricPole();
+						Entities::ElectricPole* electricPole = new Entities::BigElectricPole(entitiesIdGenerator.getEntityId());
 						return electricPole;
 					}
 					case Entities::ELECTRIC_POLE_TYPE::SUBSTATION:
 					{
-						Entities::ElectricPole* electricPole = new Entities::SubStation();
+						Entities::ElectricPole* electricPole = new Entities::SubStation(entitiesIdGenerator.getEntityId());
 						return electricPole;
 					}
 					default:

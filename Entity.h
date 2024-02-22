@@ -92,13 +92,14 @@ namespace Entities
 	public:
 		virtual ~Entity();
 
-		const std::pair<unsigned int, unsigned int>& getTilesDistribution() const;
-		const std::pair<unsigned int, unsigned int>& getPosition() const;
+		const uintPair& getTilesDistribution() const;
+		const uintPair& getPosition() const;
 		ENTITY_TYPE getEntityType() const;
 		const bool getIsPlaced() const;
 		const char* getEntityName() const;
+		const uint32_t getEntityId() const;
 
-		void setPosition(std::pair<unsigned int, unsigned int> newPosition);
+		void setPosition(uintPair newPosition);
 
 		inline static void resetEntities(std::vector<Entity*>& entities)
 		{
@@ -106,6 +107,11 @@ namespace Entities
 			{
 				entity->resetEntityPosition();
 			}
+		}
+
+		inline static void resetEntity(Entity* entity)
+		{
+			entity->resetEntityPosition();
 		}
 
 		template<typename T>
@@ -117,12 +123,14 @@ namespace Entities
 			}
 		}
 	protected:
-		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType, const char* entityName);
+		Entity(const std::vector<bool> tilesMap, const std::pair<unsigned int, unsigned int > tilesDistribution, std::pair<unsigned int, unsigned int > position, const ENTITY_TYPE entityType, const char* entityName, const uint32_t entityId);
+
+		const uint32_t entityId;
 
 		unsigned int tiles;
 		std::vector<bool> tilesDistMap;
-		std::pair<unsigned int, unsigned int> tilesDistribution;
-		std::pair<unsigned int, unsigned int> position;
+		uintPair tilesDistribution;
+		uintPair position;
 		
 		const char* entityName;
 		const ENTITY_TYPE entityType;
@@ -140,7 +148,7 @@ namespace Entities
 	class SolarPanel : public Entity
 	{
 	public:
-		SolarPanel();
+		SolarPanel(const uint32_t entityId);
 		~SolarPanel();
 	private:
 	};
@@ -159,7 +167,7 @@ namespace Entities
 		void setNeighbour(ElectricPole* electricPole);
 		void removeNeighbour(ElectricPole* electricPole);
 	protected:
-		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType, const char* entityName);
+		ElectricPole(const std::vector<bool> tilesMap, std::pair<unsigned int, unsigned int > tilesDistribution, unsigned int influenceTiles, double wireTilesDistance, ELECTRIC_POLE_TYPE electricPoleType, const char* entityName, const uint32_t entityId);
 	private:
 		const unsigned int influenceTiles;
 		const double wireTilesDistance;
@@ -170,7 +178,7 @@ namespace Entities
 	class SmallElectricPole : public ElectricPole
 	{
 	public:
-		SmallElectricPole();
+		SmallElectricPole(const uint32_t entityId);
 		~SmallElectricPole();
 	private:
 	};
@@ -178,7 +186,7 @@ namespace Entities
 	class MediumElectricPole : public ElectricPole
 	{
 	public:
-		MediumElectricPole();
+		MediumElectricPole(const uint32_t entityId);
 		~MediumElectricPole();
 	private:
 	};
@@ -186,7 +194,7 @@ namespace Entities
 	class BigElectricPole : public ElectricPole
 	{
 	public:
-		BigElectricPole();
+		BigElectricPole(const uint32_t entityId);
 		~BigElectricPole();
 	private:
 	};
@@ -194,7 +202,7 @@ namespace Entities
 	class SubStation : public ElectricPole
 	{
 	public:
-		SubStation();
+		SubStation(const uint32_t entityId);
 		~SubStation();
 	private:
 	};
@@ -202,7 +210,7 @@ namespace Entities
 	class Accumulator : public Entity
 	{
 	public:
-		Accumulator();
+		Accumulator(const uint32_t entityId);
 		~Accumulator();
 	private:
 	};
@@ -210,7 +218,7 @@ namespace Entities
 	class Roboport : public Entity
 	{
 	public:
-		Roboport();
+		Roboport(const uint32_t entityId);
 		~Roboport();
 
 		uintPair getConstructionArea() const;
@@ -223,7 +231,7 @@ namespace Entities
 	class Radar : public Entity
 	{
 	public:
-		Radar();
+		Radar(const uint32_t entityId);
 		~Radar();
 
 		uintPair getNearbyPulseScanArea() const;

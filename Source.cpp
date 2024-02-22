@@ -13,6 +13,8 @@ int main(int argc, char* argv[])
 	using EntityPtrList = std::vector<Entities::Entity*>;
 	EntityPtrList entityList;
 
+	EntitiesUtility::EntitiesIdGenerator entitiesIdGenerator;
+
 	CalculationsUtility::SolverSettings solverSettings;
 
 	//! Solar Panels
@@ -43,10 +45,10 @@ int main(int argc, char* argv[])
 	std::cout << "Number of Accumulators = " << solverSettings.numAccumulators << "\n";
 
 	std::vector<Entities::SolarPanel*> solarPanels;
-	CalculationsUtility::Solver::instantiateEntities(solverSettings.numSolarPanels, solarPanels);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numSolarPanels, solarPanels, entitiesIdGenerator);
 	const int totalOccupiedSurfaceSolarPanels = CalculationsUtility::Solver::calculateOccupiedSurface(solarPanels);
 	std::vector<Entities::Accumulator*> accumulators;
-	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numAccumulators, accumulators, entitiesIdGenerator);
 	const int totalOccupiedSurfaceAccumulators = CalculationsUtility::Solver::calculateOccupiedSurface(accumulators);
 
 	//! Electrical active entities
@@ -69,7 +71,7 @@ int main(int argc, char* argv[])
 	}
 
 	std::vector<Entities::ElectricPole*> electricPoles;
-	CalculationsUtility::Solver::instantiateEntities(solverSettings.numPoles, electricPoles, solverSettings.electricPoleType);
+	CalculationsUtility::Solver::instantiateEntities(solverSettings.numPoles, electricPoles, solverSettings.electricPoleType, entitiesIdGenerator);
 
 	solverSettings.entitiesArrangementStrategy = static_cast<CalculationsUtility::EntityArrangementStrategy>(
 		IOUtil::KbdIO::userInputPrompt(
