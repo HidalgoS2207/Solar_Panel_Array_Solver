@@ -6,6 +6,8 @@
 
 namespace GFX
 {
+	using uIntPair = std::pair<unsigned int, unsigned int>;
+
 	class EntityTypeWrapper
 	{
 	public:
@@ -46,6 +48,7 @@ namespace GFX
 		ShapeWrapper(ShapeType shapeType);
 		~ShapeWrapper();
 
+		void setShapeInfo(sf::Color shapeColor, uIntPair relPos,uIntPair c1, uIntPair c2);
 
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
@@ -54,23 +57,33 @@ namespace GFX
 	};
 
 	using EntityRepresentation = std::vector<ShapeWrapper>;
-	using EntitiesRepMapping = std::map<EntityTypeWrapper, EntityRepresentation>;
 	using EntityId = uint32_t;
+
+	class EntitiesRepMapping
+	{
+	public:
+		EntitiesRepMapping();
+		~EntitiesRepMapping();
+
+		EntityRepresentation& getEntityRep(const EntityTypeWrapper& entityType);
+	private:
+		void setEntityRepresentationInfo();
+
+		std::map<EntityTypeWrapper, EntityRepresentation> EntityRepresentationByEntityType;
+	};
 
 	class Rendereable
 	{
 	public:
-		Rendereable();
+		Rendereable(EntitiesRepMapping& entitiesRepMapping);
 		~Rendereable();
 
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
-		void setEntityRepresentationInfo();
-
-		EntitiesRepMapping entitiesRepMapping;
+		EntitiesRepMapping& entitiesRepMapping;
 
 		double scaleFactor;
-		std::map<EntityId, EntityRepresentation> entities;
+		std::map<EntityId, EntityTypeWrapper> entities;
 	};
 
 	class Window
@@ -84,5 +97,6 @@ namespace GFX
 	private:
 		sf::RenderWindow* renderWindow;
 		Rendereable renderableObjets;
+		EntitiesRepMapping entitiesRepMapping;
 	};
 }

@@ -19,12 +19,16 @@ void GFX::Window::render()
 	renderWindow->display();
 }
 
-GFX::Rendereable::Rendereable()
-	:
-	scaleFactor(1.f)
+void GFX::Window::declareRendereable(EntityId entityId, Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType)
 {
-	setEntityRepresentationInfo();
+	
 }
+
+GFX::Rendereable::Rendereable(EntitiesRepMapping& entitiesRepMapping)
+	:
+	entitiesRepMapping(entitiesRepMapping),
+	scaleFactor(1.f)
+{}
 
 GFX::Rendereable::~Rendereable()
 {
@@ -34,17 +38,12 @@ void GFX::Rendereable::draw(sf::RenderWindow& renderWindowRef)
 {
 	for (auto& entity : entities)
 	{
-		for (auto& entityRep : entity.second)
+		EntityRepresentation& entityRepList = entitiesRepMapping.getEntityRep(entity.second);
+		for (auto& entityRepElem : entityRepList)
 		{
-			entityRep.draw(renderWindowRef);
+			entityRepElem.draw(renderWindowRef);
 		}
 	}
-}
-
-void GFX::Rendereable::setEntityRepresentationInfo()
-{
-	EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
-	std::vector<ShapeWrapper>& solarPanelRepresentation = entitiesRepMapping[solarPanel];
 }
 
 GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
@@ -95,3 +94,38 @@ GFX::EntityTypeWrapper::EntityTypeWrapper(EntityType entityType)
 
 GFX::EntityTypeWrapper::~EntityTypeWrapper()
 {}
+
+GFX::EntitiesRepMapping::EntitiesRepMapping()
+{
+
+}
+
+GFX::EntitiesRepMapping::~EntitiesRepMapping()
+{
+
+}
+
+GFX::EntityRepresentation& GFX::EntitiesRepMapping::getEntityRep(const EntityTypeWrapper& entityType)
+{
+	return EntityRepresentationByEntityType[entityType];
+}
+
+void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
+{
+	//--------SOLAR PANEL---------------------
+	EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
+	std::vector<ShapeWrapper>& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel];
+	ShapeWrapper shape1(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+	
+	solarPanelRepresentation.push_back(shape1);
+	
+	//--------ACCUMULATOR---------------------
+	 
+	
+	//--------SMALL ELECTRIC POLE-------------
+	//--------MEDIUM ELECTRIC POLE------------
+	//--------BIG ELECTRIC POLE---------------
+	//--------SUBSTATION----------------------
+	//--------ROBOPORT------------------------
+	//--------RADAR---------------------------
+}

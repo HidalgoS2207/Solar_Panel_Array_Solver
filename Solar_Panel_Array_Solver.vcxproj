@@ -109,12 +109,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Hidalgo\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML_Build\libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Hidalgo\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-Build\libs\Debug;C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML_Build\libs\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -127,14 +127,14 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Hidalgo\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML_Build\libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Hidalgo\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML-Build\libs\Release;C:\Users\Sebastian\source\repos\HidalgoS2207\Solar_Panel_Array_Solver\SFML_Build\libs\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
