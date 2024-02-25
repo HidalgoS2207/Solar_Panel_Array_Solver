@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Entity.h"
+#include "Util.h"
 
 #include <SFML/Graphics.hpp>
 
 namespace GFX
 {
 	using uIntPair = std::pair<unsigned int, unsigned int>;
+	using floatPair = std::pair<float, float>;
 
 	class EntityTypeWrapper
 	{
@@ -25,7 +27,10 @@ namespace GFX
 		};
 	public:
 		EntityTypeWrapper(EntityType entityType);
+		EntityTypeWrapper(const EntityTypeWrapper& entityTypeWrapper);
 		~EntityTypeWrapper();
+
+		const EntityTypeWrapper::EntityType getEntityType() const;
 
 		friend bool operator<(const EntityTypeWrapper& entTyWrap1, const EntityTypeWrapper& entTyWrap2)
 		{
@@ -46,14 +51,16 @@ namespace GFX
 		};
 	public:
 		ShapeWrapper(ShapeType shapeType);
+		ShapeWrapper(const ShapeWrapper& shapeWrapperRef);
 		~ShapeWrapper();
 
-		void setShapeInfo(sf::Color shapeColor, uIntPair relPos,uIntPair c1, uIntPair c2);
+		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
 
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
 		sf::Shape* shapePtr;
 		const ShapeType shapeType;
+		uIntPair relPos;
 	};
 
 	using EntityRepresentation = std::vector<ShapeWrapper>;
@@ -69,18 +76,21 @@ namespace GFX
 	private:
 		void setEntityRepresentationInfo();
 
-		std::map<EntityTypeWrapper, EntityRepresentation> EntityRepresentationByEntityType;
+		std::map<EntityTypeWrapper::EntityType, EntityRepresentation> EntityRepresentationByEntityType;
 	};
 
 	class Rendereable
 	{
 	public:
-		Rendereable(EntitiesRepMapping& entitiesRepMapping);
+		Rendereable();
 		~Rendereable();
 
 		void draw(sf::RenderWindow& renderWindowRef);
+		void insert(const EntityId entityId, const EntityTypeWrapper entityTypeWrapper);
+
+		const EntityTypeWrapper getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);
 	private:
-		EntitiesRepMapping& entitiesRepMapping;
+		EntitiesRepMapping entitiesRepMapping;
 
 		double scaleFactor;
 		std::map<EntityId, EntityTypeWrapper> entities;
@@ -93,9 +103,12 @@ namespace GFX
 		~Window();
 
 		void render();
+		void handleEvents();
+		bool windowState();
 		void declareRendereable(EntityId entityId, Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);
 	private:
 		sf::RenderWindow* renderWindow;
+		sf::Event event;
 		Rendereable renderableObjets;
 		EntitiesRepMapping entitiesRepMapping;
 	};
