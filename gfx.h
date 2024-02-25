@@ -79,12 +79,16 @@ namespace GFX
 
 	class EntitiesRepMapping
 	{
+	private:
+		const int pixelsPerTile;
 	public:
 		EntitiesRepMapping();
 		~EntitiesRepMapping();
 
 		EntityRepresentation& getEntityRep(const EntityTypeWrapper& entityType);
 	private:
+		floatPair entityTypeSizeConverter(const GFX::EntityTypeWrapper::EntityType entityType);
+
 		void setEntityRepresentationInfo();
 
 		EntityRepresentationByEntityType EntityRepresentationByEntityType;

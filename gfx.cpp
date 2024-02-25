@@ -19,7 +19,7 @@ void GFX::Window::render()
 	renderWindow->display();
 }
 
-void GFX::Window::updateRendereablePosition(const EntityId id,const floatPair pos)
+void GFX::Window::updateRendereablePosition(const EntityId id, const floatPair pos)
 {
 	renderableObjets.updateEntityPosition(id, pos);
 }
@@ -82,7 +82,7 @@ void GFX::Rendereable::updateEntityPosition(const EntityId entityId, const float
 		IOUtil::Asserts::assertMessage(false, "GFX::Rendereable::updateEntityPosition - Position cannot be updated entityId couldn't be found.");
 		return;
 	}
-	
+
 	entityTypeWrapperIt->second.setPosition(pos);
 }
 
@@ -220,6 +220,8 @@ const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType()
 }
 
 GFX::EntitiesRepMapping::EntitiesRepMapping()
+	:
+	pixelsPerTile(20)
 {
 	setEntityRepresentationInfo();
 }
@@ -240,17 +242,80 @@ GFX::EntityRepresentation& GFX::EntitiesRepMapping::getEntityRep(const EntityTyp
 	return EntityRepresentationByEntityType[entityType.getEntityType()];
 }
 
+GFX::floatPair GFX::EntitiesRepMapping::entityTypeSizeConverter(const GFX::EntityTypeWrapper::EntityType entityType)
+{
+	auto getSideOccupiesTilesByElectricPoleType = [](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> const int
+		{
+			return static_cast<int>(std::sqrt(Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(electricPoleType)));
+		};
+
+	switch (entityType)
+	{
+	case GFX::EntityTypeWrapper::EntityType::SOLAR_PANEL:
+		return { Entities::SolarPanelSideNumTiles * pixelsPerTile,Entities::SolarPanelSideNumTiles * pixelsPerTile };
+		break;
+	case GFX::EntityTypeWrapper::EntityType::ACCUMULATOR:
+		return { Entities::AccumulatorSideNumTiles * pixelsPerTile,Entities::AccumulatorSideNumTiles * pixelsPerTile };
+		break;
+	case GFX::EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE:
+	{
+		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SMALL);
+		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+	}
+	break;
+	case GFX::EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE:
+	{
+		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::MEDIUM);
+		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+	}
+	break;
+	case GFX::EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE:
+	{
+		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::BIG);
+		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+	}
+	case GFX::EntityTypeWrapper::EntityType::SUBSTATION:
+	{
+		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SUBSTATION);
+		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+	}
+	break;
+	case GFX::EntityTypeWrapper::EntityType::ROBOPORT:
+	{
+		return { Entities::RoboportSideNumTiles * pixelsPerTile,Entities::RoboportSideNumTiles * pixelsPerTile };
+	}
+	break;
+	case GFX::EntityTypeWrapper::EntityType::RADAR:
+	{
+		return { Entities::RadarSideNumTiles * pixelsPerTile,Entities::RadarSideNumTiles * pixelsPerTile };
+	}
+	break;
+	default:
+		IOUtil::Asserts::assertMessage(false, "GFX::EntitiesRepMapping::entityTypeSizeConverter - Invalid entity type returning size {0,0}");
+		return { 0,0 };
+		break;
+	}
+}
+
 void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 {
 	//--------SOLAR PANEL---------------------
-	EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
-	EntityRepresentation& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
-	ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-	shape1->setShapeInfo(sf::Color::Red, { 0,0 }, { 30,30 });
-	solarPanelRepresentation.emplace_back(shape1);
+	{
+		EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
+		EntityRepresentation& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::Red, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape2->setShapeInfo(sf::Color::Red, { 4,4 }, { 10,10 });
+		solarPanelRepresentation.emplace_back(shape1);
+		solarPanelRepresentation.emplace_back(shape2);
+	}
 
 	//--------ACCUMULATOR---------------------
-
+	{
+		EntityTypeWrapper accumulator(EntityTypeWrapper::EntityType::ACCUMULATOR);
+		EntityRepresentation& accumulatorRepresentation = EntityRepresentationByEntityType[accumulator.getEntityType()];
+	}
 
 	//--------SMALL ELECTRIC POLE-------------
 	//--------MEDIUM ELECTRIC POLE------------
