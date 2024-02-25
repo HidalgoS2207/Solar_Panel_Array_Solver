@@ -52,19 +52,19 @@ GFX::Rendereable::~Rendereable()
 
 void GFX::Rendereable::draw(sf::RenderWindow& renderWindowRef)
 {
-	for (auto& entity : entities)
+	for (auto& entity : entityTypeWrapperByEntityId)
 	{
 		EntityRepresentation& entityRepList = entitiesRepMapping.getEntityRep(entity.second);
 		for (auto& entityRepElem : entityRepList)
 		{
-			entityRepElem.draw(renderWindowRef);
+			entityRepElem->draw(renderWindowRef);
 		}
 	}
 }
 
 void GFX::Rendereable::insert(const EntityId entityId, const EntityTypeWrapper entityTypeWrapper)
 {
-	entities.insert({ entityId,entityTypeWrapper });
+	entityTypeWrapperByEntityId.insert({ entityId,entityTypeWrapper });
 }
 
 const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType)
@@ -146,7 +146,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 {
 	this->relPos = relPos;
 
-	if (this->shapeType != GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE)
+	if (this->shapeType == GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE)
 	{
 		sf::RectangleShape* rectShape = dynamic_cast<sf::RectangleShape*>(shapePtr);
 
@@ -161,6 +161,8 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 
 void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 {
+	sf::RectangleShape* recshape = (dynamic_cast<sf::RectangleShape*>(shapePtr));
+
 	switch (shapeType)
 	{
 	case GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE:
@@ -178,7 +180,8 @@ void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 
 GFX::EntityTypeWrapper::EntityTypeWrapper(EntityType entityType)
 	:
-	entityType(entityType)
+	entityType(entityType),
+	position(0.0, 0.0)
 {}
 
 GFX::EntityTypeWrapper::EntityTypeWrapper(const EntityTypeWrapper& entityTypeWrapper)
@@ -188,6 +191,16 @@ GFX::EntityTypeWrapper::EntityTypeWrapper(const EntityTypeWrapper& entityTypeWra
 
 GFX::EntityTypeWrapper::~EntityTypeWrapper()
 {}
+
+const GFX::floatPair& GFX::EntityTypeWrapper::getPosition()
+{
+	return position;
+}
+
+void GFX::EntityTypeWrapper::setPosition(floatPair position)
+{
+	this->position = position;
+}
 
 const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType() const
 {
@@ -201,7 +214,13 @@ GFX::EntitiesRepMapping::EntitiesRepMapping()
 
 GFX::EntitiesRepMapping::~EntitiesRepMapping()
 {
-
+	for (auto& entityRepPair : EntityRepresentationByEntityType)
+	{
+		for (ShapeWrapper* entityRepElem : entityRepPair.second)
+		{
+			delete entityRepElem;
+		}
+	}
 }
 
 GFX::EntityRepresentation& GFX::EntitiesRepMapping::getEntityRep(const EntityTypeWrapper& entityType)
@@ -213,10 +232,10 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 {
 	//--------SOLAR PANEL---------------------
 	EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
-	std::vector<ShapeWrapper>& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
-	ShapeWrapper shape1(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-	shape1.setShapeInfo(sf::Color::Red, { 0,0 }, { 30,30 });
-	solarPanelRepresentation.push_back(shape1);
+	EntityRepresentation& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
+	ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+	shape1->setShapeInfo(sf::Color::Red, { 0,0 }, { 30,30 });
+	solarPanelRepresentation.emplace_back(shape1);
 
 	//--------ACCUMULATOR---------------------
 

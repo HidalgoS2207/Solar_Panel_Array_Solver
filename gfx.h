@@ -10,6 +10,8 @@ namespace GFX
 	using uIntPair = std::pair<unsigned int, unsigned int>;
 	using floatPair = std::pair<float, float>;
 
+	using EntityId = uint32_t;
+
 	class EntityTypeWrapper
 	{
 	public:
@@ -30,6 +32,9 @@ namespace GFX
 		EntityTypeWrapper(const EntityTypeWrapper& entityTypeWrapper);
 		~EntityTypeWrapper();
 
+		const floatPair& getPosition();
+		void setPosition(floatPair position);
+
 		const EntityTypeWrapper::EntityType getEntityType() const;
 
 		friend bool operator<(const EntityTypeWrapper& entTyWrap1, const EntityTypeWrapper& entTyWrap2)
@@ -38,6 +43,8 @@ namespace GFX
 		}
 	private:
 		EntityType entityType;
+
+		floatPair position;
 	};
 
 	class ShapeWrapper
@@ -63,8 +70,9 @@ namespace GFX
 		uIntPair relPos;
 	};
 
-	using EntityRepresentation = std::vector<ShapeWrapper>;
-	using EntityId = uint32_t;
+	using EntityRepresentation = std::vector<ShapeWrapper*>;
+	using EntityTypeWrapperByEntityId = std::map<EntityId, EntityTypeWrapper>;
+	using EntityRepresentationByEntityTypeWrapper = std::map<EntityTypeWrapper::EntityType, EntityRepresentation>;
 
 	class EntitiesRepMapping
 	{
@@ -76,7 +84,7 @@ namespace GFX
 	private:
 		void setEntityRepresentationInfo();
 
-		std::map<EntityTypeWrapper::EntityType, EntityRepresentation> EntityRepresentationByEntityType;
+		EntityRepresentationByEntityTypeWrapper EntityRepresentationByEntityType;
 	};
 
 	class Rendereable
@@ -93,7 +101,7 @@ namespace GFX
 		EntitiesRepMapping entitiesRepMapping;
 
 		double scaleFactor;
-		std::map<EntityId, EntityTypeWrapper> entities;
+		EntityTypeWrapperByEntityId entityTypeWrapperByEntityId;
 	};
 
 	class Window
@@ -110,6 +118,5 @@ namespace GFX
 		sf::RenderWindow* renderWindow;
 		sf::Event event;
 		Rendereable renderableObjets;
-		EntitiesRepMapping entitiesRepMapping;
 	};
 }
