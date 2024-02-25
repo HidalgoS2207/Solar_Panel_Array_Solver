@@ -11,6 +11,7 @@ namespace GFX
 	using floatPair = std::pair<float, float>;
 
 	using EntityId = uint32_t;
+	//using EntitiesList = std::vector<Entities::>;
 
 	class EntityTypeWrapper
 	{
@@ -63,6 +64,8 @@ namespace GFX
 
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
 
+		void setPosition(const floatPair absPosition);
+
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
 		sf::Shape* shapePtr;
@@ -72,7 +75,7 @@ namespace GFX
 
 	using EntityRepresentation = std::vector<ShapeWrapper*>;
 	using EntityTypeWrapperByEntityId = std::map<EntityId, EntityTypeWrapper>;
-	using EntityRepresentationByEntityTypeWrapper = std::map<EntityTypeWrapper::EntityType, EntityRepresentation>;
+	using EntityRepresentationByEntityType = std::map<EntityTypeWrapper::EntityType, EntityRepresentation>;
 
 	class EntitiesRepMapping
 	{
@@ -84,7 +87,7 @@ namespace GFX
 	private:
 		void setEntityRepresentationInfo();
 
-		EntityRepresentationByEntityTypeWrapper EntityRepresentationByEntityType;
+		EntityRepresentationByEntityType EntityRepresentationByEntityType;
 	};
 
 	class Rendereable
@@ -95,6 +98,7 @@ namespace GFX
 
 		void draw(sf::RenderWindow& renderWindowRef);
 		void insert(const EntityId entityId, const EntityTypeWrapper entityTypeWrapper);
+		void updateEntityPosition(const EntityId entityId, const floatPair pos);
 
 		const EntityTypeWrapper getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);
 	private:
@@ -111,6 +115,7 @@ namespace GFX
 		~Window();
 
 		void render();
+		void updateRendereablePosition(const EntityId id,const floatPair pos);
 		void handleEvents();
 		bool windowState();
 		void declareRendereable(EntityId entityId, Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);

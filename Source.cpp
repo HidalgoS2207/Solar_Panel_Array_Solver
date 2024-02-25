@@ -92,9 +92,15 @@ int main(int argc, char* argv[])
 		)
 		);
 
+	Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
+	Entities::Entity::insertToEntityPtrList(accumulators, entityList);
+	Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
+
 	// ! Rendering
 	GFX::Window renderHandler;
 	renderHandler.declareRendereable(0, Entities::ENTITY_TYPE::SOLAR_PANEL);
+	renderHandler.declareRendereable(1, Entities::ENTITY_TYPE::SOLAR_PANEL);
+	renderHandler.declareRendereable(2, Entities::ENTITY_TYPE::SOLAR_PANEL);
 
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::nanoseconds t_diff;
@@ -110,6 +116,14 @@ int main(int argc, char* argv[])
 		{
 			t1 = std::chrono::steady_clock::now();
 
+			//for (Entities::Entity* entityPtr : entityList)
+			//{
+			//	renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
+			//}
+			renderHandler.updateRendereablePosition(0, { 50,50 });
+			renderHandler.updateRendereablePosition(1, { 100,50 });
+			renderHandler.updateRendereablePosition(2, { 200,50 });
+
 			renderHandler.render();
 
 			renderHandler.handleEvents();
@@ -119,10 +133,6 @@ int main(int argc, char* argv[])
 	}
 
 	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
-
-	Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
-	Entities::Entity::insertToEntityPtrList(accumulators, entityList);
-	Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
 
 	Output::Json json;
 	json.saveToFile("bluePrintJsonOutput.txt", entityList);

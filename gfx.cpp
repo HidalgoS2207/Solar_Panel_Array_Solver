@@ -19,6 +19,11 @@ void GFX::Window::render()
 	renderWindow->display();
 }
 
+void GFX::Window::updateRendereablePosition(const EntityId id,const floatPair pos)
+{
+	renderableObjets.updateEntityPosition(id, pos);
+}
+
 void GFX::Window::handleEvents()
 {
 	while (renderWindow->pollEvent(event))
@@ -55,8 +60,9 @@ void GFX::Rendereable::draw(sf::RenderWindow& renderWindowRef)
 	for (auto& entity : entityTypeWrapperByEntityId)
 	{
 		EntityRepresentation& entityRepList = entitiesRepMapping.getEntityRep(entity.second);
-		for (auto& entityRepElem : entityRepList)
+		for (auto entityRepElem : entityRepList)
 		{
+			entityRepElem->setPosition(entity.second.getPosition());
 			entityRepElem->draw(renderWindowRef);
 		}
 	}
@@ -65,6 +71,19 @@ void GFX::Rendereable::draw(sf::RenderWindow& renderWindowRef)
 void GFX::Rendereable::insert(const EntityId entityId, const EntityTypeWrapper entityTypeWrapper)
 {
 	entityTypeWrapperByEntityId.insert({ entityId,entityTypeWrapper });
+}
+
+void GFX::Rendereable::updateEntityPosition(const EntityId entityId, const floatPair pos)
+{
+	EntityTypeWrapperByEntityId::iterator entityTypeWrapperIt = entityTypeWrapperByEntityId.find(entityId);
+
+	if (entityTypeWrapperIt == entityTypeWrapperByEntityId.end())
+	{
+		IOUtil::Asserts::assertMessage(false, "GFX::Rendereable::updateEntityPosition - Position cannot be updated entityId couldn't be found.");
+		return;
+	}
+	
+	entityTypeWrapperIt->second.setPosition(pos);
 }
 
 const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType)
@@ -151,7 +170,9 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 		sf::RectangleShape* rectShape = dynamic_cast<sf::RectangleShape*>(shapePtr);
 
 		rectShape->setSize(sf::Vector2f({ size.first,size.second }));
-		rectShape->setFillColor(shapeColor);
+		rectShape->setFillColor(sf::Color::Transparent);
+		rectShape->setOutlineColor(shapeColor);
+		rectShape->setOutlineThickness(2.0);
 	}
 	else
 	{
@@ -159,23 +180,14 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 }
 
+void GFX::ShapeWrapper::setPosition(const floatPair absPosition)
+{
+	shapePtr->setPosition({ absPosition.first + relPos.first,absPosition.second + relPos.second });
+}
+
 void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 {
-	sf::RectangleShape* recshape = (dynamic_cast<sf::RectangleShape*>(shapePtr));
-
-	switch (shapeType)
-	{
-	case GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE:
-		renderWindowRef.draw(*(dynamic_cast<sf::CircleShape*>(shapePtr)));
-		break;
-	case GFX::ShapeWrapper::ShapeType::CONVEX_SHAPE:
-		renderWindowRef.draw(*(dynamic_cast<sf::ConvexShape*>(shapePtr)));
-		break;
-	case GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE:
-	default:
-		renderWindowRef.draw(*(dynamic_cast<sf::RectangleShape*>(shapePtr)));
-		break;
-	}
+	renderWindowRef.draw(*shapePtr);
 }
 
 GFX::EntityTypeWrapper::EntityTypeWrapper(EntityType entityType)
