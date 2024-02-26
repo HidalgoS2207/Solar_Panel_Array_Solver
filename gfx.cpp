@@ -176,7 +176,51 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 	else
 	{
-		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type.");
+		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected RECTANGLE_SHAPE.");
+	}
+}
+
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius)
+{
+	this->relPos = relPos;
+
+	if (this->shapeType == GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE)
+	{
+		sf::CircleShape* circleShape = dynamic_cast<sf::CircleShape*>(shapePtr);
+
+		circleShape->setRadius(radius);
+		circleShape->setFillColor(sf::Color::Transparent);
+		circleShape->setOutlineColor(shapeColor);
+		circleShape->setOutlineThickness(2.0);
+	}
+	else
+	{
+		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected CIRCLE_SHAPE.");
+	}
+}
+
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList)
+{
+	this->relPos = relPos;
+
+	if (this->shapeType == GFX::ShapeWrapper::ShapeType::CONVEX_SHAPE)
+	{
+		sf::ConvexShape* convexShape = dynamic_cast<sf::ConvexShape*>(shapePtr);
+		//convexShape->setFillColor(sf::Color::Transparent);
+		convexShape->setOutlineColor(shapeColor);
+		convexShape->setOutlineThickness(2.0);
+
+		int idx = 0;
+		convexShape->setPointCount(pointsList.size());
+		for (const floatPair& pos : pointsList)
+		{
+			convexShape->setPoint(idx, { pos.first,pos.second });
+			idx++;
+		}
+	}
+	else
+	{
+		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected CIRCLE_SHAPE.");
 	}
 }
 
@@ -303,18 +347,43 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 	{
 		EntityTypeWrapper solarPanel(EntityTypeWrapper::EntityType::SOLAR_PANEL);
 		EntityRepresentation& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
+
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::Red, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
+
+		float shape2Scale = 0.85;
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-		shape2->setShapeInfo(sf::Color::Red, { 4,4 }, { 10,10 });
+		floatPair sizeShape2 = { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale), (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale) };
+		float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
+		shape2->setShapeInfo(sf::Color::Red, { posShape2,posShape2 }, { sizeShape2 });
+
+		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::CONVEX_SHAPE);
+		shape3->setShapeInfo(sf::Color::Red, { posShape2,posShape2 }, { {posShape2,posShape2},{posShape2 + sizeShape2.first,posShape2 + sizeShape2.first},{posShape2 + sizeShape2.first,posShape2} });
+
 		solarPanelRepresentation.emplace_back(shape1);
 		solarPanelRepresentation.emplace_back(shape2);
+		solarPanelRepresentation.emplace_back(shape3);
 	}
 
 	//--------ACCUMULATOR---------------------
 	{
 		EntityTypeWrapper accumulator(EntityTypeWrapper::EntityType::ACCUMULATOR);
 		EntityRepresentation& accumulatorRepresentation = EntityRepresentationByEntityType[accumulator.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::Blue, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR) });
+
+		/*float shape2Scale = 0.5;
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		floatPair sizeShape2 = { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first * shape2Scale), (entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first * shape2Scale) };
+		float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first - (sizeShape2.first)) / 2.0;
+		shape2->setShapeInfo(sf::Color::Blue, { posShape2,posShape2 }, { sizeShape2 });*/
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE);
+		shape2->setShapeInfo(sf::Color::Blue, { 0,0 }, entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first / 2.0);
+
+		accumulatorRepresentation.emplace_back(shape1);
+		accumulatorRepresentation.emplace_back(shape2);
 	}
 
 	//--------SMALL ELECTRIC POLE-------------

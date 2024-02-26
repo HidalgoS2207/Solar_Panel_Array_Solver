@@ -11,7 +11,8 @@ namespace GFX
 	using floatPair = std::pair<float, float>;
 
 	using EntityId = uint32_t;
-	//using EntitiesList = std::vector<Entities::>;
+	
+	using PointsList = std::vector<floatPair>;
 
 	class EntityTypeWrapper
 	{
@@ -63,6 +64,8 @@ namespace GFX
 		~ShapeWrapper();
 
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
+		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius);
+		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList);
 
 		void setPosition(const floatPair absPosition);
 
