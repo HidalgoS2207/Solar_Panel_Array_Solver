@@ -17,6 +17,7 @@ namespace Entities
 
 	enum class ENTITY_TYPE
 	{
+		INVALID = -1,
 		SOLAR_PANEL,
 		ACCUMULATOR,
 		ELECTRIC_POLE,

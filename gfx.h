@@ -56,7 +56,8 @@ namespace GFX
 		{
 			CONVEX_SHAPE,
 			CIRCLE_SHAPE,
-			RECTANGLE_SHAPE
+			RECTANGLE_SHAPE,
+			TEXT
 		};
 	public:
 		ShapeWrapper(ShapeType shapeType);
@@ -66,12 +67,15 @@ namespace GFX
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius);
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList);
+		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay);
 
 		void setPosition(const floatPair absPosition);
 
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
 		sf::Shape* shapePtr;
+		sf::Text* textPtr;
+		sf::Font font;
 		const ShapeType shapeType;
 		uIntPair relPos;
 	};

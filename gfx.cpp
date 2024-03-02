@@ -100,20 +100,22 @@ const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::EN
 	{
 		switch (electricPoleType)
 		{
-		case Entities::SMALL:
+		case Entities::ELECTRIC_POLE_TYPE::SMALL:
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE);
 			break;
-		case Entities::MEDIUM:
+		case Entities::ELECTRIC_POLE_TYPE::MEDIUM:
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE);
 			break;
-		case Entities::BIG:
+		case Entities::ELECTRIC_POLE_TYPE::BIG:
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE);
 			break;
-		case Entities::SUBSTATION:
+		case Entities::ELECTRIC_POLE_TYPE::SUBSTATION:
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::SUBSTATION);
 			break;
-		case Entities::INVALID:
+		case Entities::ELECTRIC_POLE_TYPE::INVALID:
 		default:
+			IOUtil::Asserts::assertMessage(false,"GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Electric Pole Type.");
+			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::INVALID);
 			break;
 		}
 	}
@@ -124,17 +126,35 @@ const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::EN
 	case Entities::ENTITY_TYPE::RADAR:
 		return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::RADAR);
 		break;
+	case Entities::ENTITY_TYPE::INVALID:
 	default:
+		IOUtil::Asserts::assertMessage(false, "GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Entity Type.");
+		return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::INVALID);
 		break;
 	}
 }
 
 GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
 	:
-	shapeType(shapeType)
+	shapeType(shapeType),
+	shapePtr(nullptr),
+	textPtr(nullptr)
 {
 	switch (shapeType)
 	{
+	case GFX::ShapeWrapper::ShapeType::TEXT:
+	{
+		if (font.loadFromFile("Assets/PressStart2P-Regular.ttf"))
+		{
+			textPtr = new sf::Text;
+			textPtr->setFont(font);
+		}
+		else
+		{
+			IOUtil::Asserts::assertMessage("GFX::ShapeWrapper::ShapeWrapper - Cannot initialize textPtr. Invalid font file path or file name.");
+		}
+	}
+		break;
 	case GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE:
 		shapePtr = new sf::CircleShape();
 		break;
@@ -150,15 +170,27 @@ GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
 
 GFX::ShapeWrapper::ShapeWrapper(const ShapeWrapper& shapeWrapperRef)
 	:
-	shapeType(shapeWrapperRef.shapeType)
+	shapeType(shapeWrapperRef.shapeType),
+	shapePtr(nullptr),
+	textPtr(nullptr)
 {
-	this->shapePtr = shapeWrapperRef.shapePtr;
+	if (shapeWrapperRef.shapePtr != nullptr)
+	{
+		this->shapePtr = shapeWrapperRef.shapePtr;
+	}
+
+	if (shapeWrapperRef.textPtr != nullptr)
+	{
+		this->textPtr = shapeWrapperRef.textPtr;
+	}
+
 	this->relPos = shapeWrapperRef.relPos;
 }
 
 GFX::ShapeWrapper::~ShapeWrapper()
 {
 	delete shapePtr;
+	delete textPtr;
 }
 
 void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size)
@@ -222,6 +254,11 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	{
 		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected CIRCLE_SHAPE.");
 	}
+}
+
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay)
+{
+
 }
 
 void GFX::ShapeWrapper::setPosition(const floatPair absPosition)
@@ -381,7 +418,31 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 	}
 
 	//--------SMALL ELECTRIC POLE-------------
+	{
+		EntityTypeWrapper smallElectricPole(EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE);
+		EntityRepresentation& smallElectricPoleRepresentation = EntityRepresentationByEntityType[smallElectricPole.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE) });
+
+		smallElectricPoleRepresentation.emplace_back(shape1);
+	}
+
 	//--------MEDIUM ELECTRIC POLE------------
+	{
+		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE);
+		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE) });
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape2->setShapeInfo(sf::Color::White, { 2,2 }, { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE).first / 4.0) - 2.0 , (entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE).second / 4.0) - 2.0 });
+
+		mediumElectricPoleRepresentation.emplace_back(shape1);
+		mediumElectricPoleRepresentation.emplace_back(shape2);
+	}
+
 	//--------BIG ELECTRIC POLE---------------
 	//--------SUBSTATION----------------------
 	//--------ROBOPORT------------------------

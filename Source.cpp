@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	GFX::Window renderHandler;
 	renderHandler.declareRendereable(0, Entities::ENTITY_TYPE::SOLAR_PANEL);
 	renderHandler.declareRendereable(1, Entities::ENTITY_TYPE::SOLAR_PANEL);
-	renderHandler.declareRendereable(2, Entities::ENTITY_TYPE::ACCUMULATOR);
+	renderHandler.declareRendereable(2, Entities::ENTITY_TYPE::ELECTRIC_POLE,Entities::ELECTRIC_POLE_TYPE::MEDIUM);
 
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::nanoseconds t_diff;
