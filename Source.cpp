@@ -3,12 +3,10 @@
 #include <cmath>
 #include <iostream>
 #include <random>
-#include <chrono>
 
 #include "Entity.h"
 #include "Util.h"
 #include "Json.h"
-#include "gfx.h"
 
 int main(int argc, char* argv[])
 {
@@ -95,36 +93,6 @@ int main(int argc, char* argv[])
 	Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
 	Entities::Entity::insertToEntityPtrList(accumulators, entityList);
 	Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
-
-	// ! Rendering
-	GFX::Window renderHandler;
-
-	std::chrono::steady_clock::time_point t1;
-	std::chrono::nanoseconds t_diff;
-	constexpr double BASE_FPS = 60.0;
-	constexpr double FPS = 120.0;
-	constexpr double NANOS_PER_FRAME = (1000.0) / (FPS) * (1000000.0);
-	double timeCount = 0.0;
-	while (renderHandler.windowState() == true)
-	{
-		t_diff = std::chrono::steady_clock::now() - t1;
-
-		if (t_diff.count() >= NANOS_PER_FRAME)
-		{
-			t1 = std::chrono::steady_clock::now();
-
-			//for (Entities::Entity* entityPtr : entityList)
-			//{
-			//	renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
-			//}
-
-			renderHandler.render();
-
-			renderHandler.handleEvents();
-
-			timeCount += (t_diff.count() / 1000000000.0);
-		}
-	}
 
 	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
 

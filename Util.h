@@ -2,8 +2,10 @@
 
 #include "ActiveSurfaceMap.h"
 #include "Entity.h"
+#include "gfx.h"
 
 #include <algorithm>
+#include <chrono>
 #include <functional>
 #include <iostream>
 #include <math.h>

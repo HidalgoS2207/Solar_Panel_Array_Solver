@@ -191,6 +191,18 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			}
 		};
 
+	//----------------------------------------------------------------------
+	// ! Rendering
+	GFX::Window renderHandler;
+
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::nanoseconds t_diff;
+	constexpr double BASE_FPS = 60.0;
+	constexpr double FPS = 120.0;
+	constexpr double NANOS_PER_FRAME = (1000.0) / (FPS) * (1000000.0);
+	double timeCount = 0.0;
+	//----------------------------------------------------------------------
+
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
 	EntitiesPtrList entitiesToPlace;
