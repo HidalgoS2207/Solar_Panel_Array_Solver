@@ -98,9 +98,6 @@ int main(int argc, char* argv[])
 
 	// ! Rendering
 	GFX::Window renderHandler;
-	renderHandler.declareRendereable(0, Entities::ENTITY_TYPE::SOLAR_PANEL);
-	renderHandler.declareRendereable(1, Entities::ENTITY_TYPE::SOLAR_PANEL);
-	renderHandler.declareRendereable(2, Entities::ENTITY_TYPE::ELECTRIC_POLE,Entities::ELECTRIC_POLE_TYPE::MEDIUM);
 
 	std::chrono::steady_clock::time_point t1;
 	std::chrono::nanoseconds t_diff;
@@ -120,9 +117,6 @@ int main(int argc, char* argv[])
 			//{
 			//	renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
 			//}
-			renderHandler.updateRendereablePosition(0, { 50,50 });
-			renderHandler.updateRendereablePosition(1, { 150,50 });
-			renderHandler.updateRendereablePosition(2, { 350,50 });
 
 			renderHandler.render();
 

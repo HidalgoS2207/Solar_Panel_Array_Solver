@@ -47,6 +47,8 @@ namespace GFX
 		EntityType entityType;
 
 		floatPair position;
+
+		bool isPositioned;
 	};
 
 	class ShapeWrapper
@@ -67,7 +69,7 @@ namespace GFX
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius);
 		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList);
-		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay);
+		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay, const unsigned int fontSize = sInitialFontSize);
 
 		void setPosition(const floatPair absPosition);
 
@@ -78,6 +80,9 @@ namespace GFX
 		sf::Font font;
 		const ShapeType shapeType;
 		uIntPair relPos;
+
+		static const char* sFontFilePath;
+		static const unsigned int sInitialFontSize;
 	};
 
 	using EntityRepresentation = std::vector<ShapeWrapper*>;
@@ -99,6 +104,8 @@ namespace GFX
 		void setEntityRepresentationInfo();
 
 		EntityRepresentationByEntityType EntityRepresentationByEntityType;
+
+		static const unsigned int sPixelsPerTile;
 	};
 
 	class Rendereable

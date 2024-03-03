@@ -114,7 +114,7 @@ const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::EN
 			break;
 		case Entities::ELECTRIC_POLE_TYPE::INVALID:
 		default:
-			IOUtil::Asserts::assertMessage(false,"GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Electric Pole Type.");
+			IOUtil::Asserts::assertMessage(false, "GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Electric Pole Type.");
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::INVALID);
 			break;
 		}
@@ -134,6 +134,9 @@ const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::EN
 	}
 }
 
+const char* GFX::ShapeWrapper::sFontFilePath = "Assets/PressStart2P-Regular.ttf";
+const unsigned int GFX::ShapeWrapper::sInitialFontSize = 10;
+
 GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
 	:
 	shapeType(shapeType),
@@ -144,17 +147,18 @@ GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
 	{
 	case GFX::ShapeWrapper::ShapeType::TEXT:
 	{
-		if (font.loadFromFile("Assets/PressStart2P-Regular.ttf"))
+		if (font.loadFromFile(sFontFilePath))
 		{
 			textPtr = new sf::Text;
 			textPtr->setFont(font);
+			textPtr->setCharacterSize(sInitialFontSize);
 		}
 		else
 		{
-			IOUtil::Asserts::assertMessage("GFX::ShapeWrapper::ShapeWrapper - Cannot initialize textPtr. Invalid font file path or file name.");
+			IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::ShapeWrapper - Cannot initialize textPtr. Invalid font file path or file name.");
 		}
 	}
-		break;
+	break;
 	case GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE:
 		shapePtr = new sf::CircleShape();
 		break;
@@ -252,23 +256,40 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 	else
 	{
-		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected CIRCLE_SHAPE.");
+		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected CONVEX_SHAPE.");
 	}
 }
 
-void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay)
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay, const unsigned int fontSize)
 {
+	this->relPos = relPos;
 
+	if (this->shapeType == GFX::ShapeWrapper::ShapeType::TEXT)
+	{
+		textPtr->setString(textToDisplay);
+		textPtr->setFillColor(shapeColor);
+		textPtr->setCharacterSize(fontSize);
+	}
+	else
+	{
+		IOUtil::Asserts::assertMessage(false, "GFX::ShapeWrapper::setShapeInfo - Cannot set shape properties. Parameters doesn't match the shape type. Expected TEXT.");
+	}
 }
 
 void GFX::ShapeWrapper::setPosition(const floatPair absPosition)
 {
-	shapePtr->setPosition({ absPosition.first + relPos.first,absPosition.second + relPos.second });
+	IOUtil::Asserts::assertMessage((shapePtr != nullptr) || (textPtr != nullptr), "GFX::ShapeWrapper::setPosition - TextPtr and ShapePtr not initialized.");
+
+	if (shapePtr != nullptr) { shapePtr->setPosition({ absPosition.first + relPos.first,absPosition.second + relPos.second }); }
+	if (textPtr != nullptr) { textPtr->setPosition({ absPosition.first + relPos.first,absPosition.second + relPos.second }); }
 }
 
 void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 {
-	renderWindowRef.draw(*shapePtr);
+	IOUtil::Asserts::assertMessage((shapePtr != nullptr) || (textPtr != nullptr), "GFX::ShapeWrapper::draw - TextPtr and ShapePtr not initialized.");
+
+	if (shapePtr != nullptr) { renderWindowRef.draw(*shapePtr); }
+	if (textPtr != nullptr) { renderWindowRef.draw(*textPtr); }
 }
 
 GFX::EntityTypeWrapper::EntityTypeWrapper(EntityType entityType)
@@ -300,9 +321,11 @@ const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType()
 	return this->entityType;
 }
 
+const unsigned int GFX::EntitiesRepMapping::sPixelsPerTile = 20;
+
 GFX::EntitiesRepMapping::EntitiesRepMapping()
 	:
-	pixelsPerTile(20)
+	pixelsPerTile(sPixelsPerTile)
 {
 	setEntityRepresentationInfo();
 }
@@ -388,14 +411,14 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::Blue, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
 
-		float shape2Scale = 0.85;
+		const float shape2Scale = 0.85;
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		floatPair sizeShape2 = { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale), (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale) };
-		float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
+		const float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
 		shape2->setShapeInfo(sf::Color::Blue, { posShape2,posShape2 }, { sizeShape2 });
 
-		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::CONVEX_SHAPE);
-		shape3->setShapeInfo(sf::Color::Blue, { posShape2,posShape2 }, { {0,0},{ sizeShape2.first, sizeShape2.first},{sizeShape2.first,0} });
+		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape3->setShapeInfo(sf::Color::White, { posShape2 + 3,posShape2 + 3 }, "SOLAR\nPANEL",10);
 
 		solarPanelRepresentation.emplace_back(shape1);
 		solarPanelRepresentation.emplace_back(shape2);
@@ -413,19 +436,27 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE);
 		shape2->setShapeInfo(sf::Color::Red, { 0,0 }, entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first / 2.0);
 
+		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape3->setShapeInfo(sf::Color::White, { 4,15 }, "ACC");
+
 		accumulatorRepresentation.emplace_back(shape1);
 		accumulatorRepresentation.emplace_back(shape2);
+		accumulatorRepresentation.emplace_back(shape3);
 	}
 
 	//--------SMALL ELECTRIC POLE-------------
 	{
-		EntityTypeWrapper smallElectricPole(EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE);
-		EntityRepresentation& smallElectricPoleRepresentation = EntityRepresentationByEntityType[smallElectricPole.getEntityType()];
+		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE);
+		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE) });
 
-		smallElectricPoleRepresentation.emplace_back(shape1);
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 2,5 }, "SP", 9);
+
+		mediumElectricPoleRepresentation.emplace_back(shape1);
+		mediumElectricPoleRepresentation.emplace_back(shape2);
 	}
 
 	//--------MEDIUM ELECTRIC POLE------------
@@ -436,15 +467,57 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE) });
 
-		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-		shape2->setShapeInfo(sf::Color::White, { 2,2 }, { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE).first / 4.0) - 2.0 , (entityTypeSizeConverter(EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE).second / 4.0) - 2.0 });
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 2,5 }, "MP", 9);
 
 		mediumElectricPoleRepresentation.emplace_back(shape1);
 		mediumElectricPoleRepresentation.emplace_back(shape2);
 	}
 
 	//--------BIG ELECTRIC POLE---------------
+	{
+		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE);
+		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE) });
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 5,5 }, "BP");
+
+		mediumElectricPoleRepresentation.emplace_back(shape1);
+		mediumElectricPoleRepresentation.emplace_back(shape2);
+	}
+
 	//--------SUBSTATION----------------------
+	{
+		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::SUBSTATION);
+		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SUBSTATION) });
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 5,5 }, "SUB");
+
+		mediumElectricPoleRepresentation.emplace_back(shape1);
+		mediumElectricPoleRepresentation.emplace_back(shape2);
+	}
+
 	//--------ROBOPORT------------------------
+	{
+		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::ROBOPORT);
+		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::ROBOPORT) });
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 2,5 }, "ROB");
+
+		mediumElectricPoleRepresentation.emplace_back(shape1);
+		mediumElectricPoleRepresentation.emplace_back(shape2);
+	}
+
 	//--------RADAR---------------------------
 }
