@@ -353,7 +353,7 @@ const bool GFX::EntityTypeWrapper::getIsVisible()
 	return isVisible;
 }
 
-const double GFX::EntitiesRepMapping::sPixelsPerTile = 20;
+const float GFX::EntitiesRepMapping::sPixelsPerTile = 20.0;
 
 GFX::EntitiesRepMapping::EntitiesRepMapping()
 	:

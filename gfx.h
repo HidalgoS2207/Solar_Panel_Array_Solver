@@ -111,7 +111,7 @@ namespace GFX
 
 		EntityRepresentationByEntityType EntityRepresentationByEntityType;
 
-		static const double sPixelsPerTile;
+		static const float sPixelsPerTile;
 	};
 
 	class Rendereable
