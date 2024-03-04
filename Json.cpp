@@ -101,7 +101,7 @@ void Output::Json::insertFooter()
 	replaceOccurrence(footerVersionNumberOcurrence, footerVersionNumber);
 }
 
-void Output::Json::saveToFile(const char* fileName, const std::vector<Entities::Entity*>& entityList)
+void Output::Json::saveToFile(const char* fileName, const Entities::EntityPtrList& entityList)
 {
 	//Starts in position 1
 	unsigned int entityNumber = 1;

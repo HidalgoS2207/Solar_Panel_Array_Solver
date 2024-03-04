@@ -6,13 +6,9 @@
 
 #include "Entity.h"
 #include "Util.h"
-#include "Json.h"
 
 int main(int argc, char* argv[])
 {
-	using EntityPtrList = std::vector<Entities::Entity*>;
-	EntityPtrList entityList;
-
 	EntitiesUtility::EntitiesIdGenerator entitiesIdGenerator;
 
 	CalculationsUtility::SolverSettings solverSettings;
@@ -90,14 +86,7 @@ int main(int argc, char* argv[])
 		)
 		);
 
-	Entities::Entity::insertToEntityPtrList(solarPanels, entityList);
-	Entities::Entity::insertToEntityPtrList(accumulators, entityList);
-	Entities::Entity::insertToEntityPtrList(electricPoles, entityList);
-
 	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
-
-	Output::Json json;
-	json.saveToFile("bluePrintJsonOutput.txt", entityList);
 
 	CalculationsUtility::Solver::destroyEntities(solarPanels);
 	CalculationsUtility::Solver::destroyEntities(accumulators);

@@ -26,7 +26,7 @@ namespace Output
 		Json();
 		~Json();
 
-		void saveToFile(const char* fileName, const std::vector<Entities::Entity*>& entityList);
+		void saveToFile(const char* fileName, const Entities::EntityPtrList& entityList);
 	private:
 		void insertEntity(Entities::Entity* entity, const unsigned int entityNumber);
 		void insertFooter();

@@ -5,6 +5,9 @@
 
 namespace Entities
 {
+	class Entity;
+
+	using EntityPtrList = std::vector<Entities::Entity*>;
 	using uintPair = std::pair<unsigned int, unsigned int>;
 
 	const unsigned int SolarPanelSideNumTiles = 3;
@@ -102,7 +105,7 @@ namespace Entities
 
 		void setPosition(uintPair newPosition);
 
-		inline static void resetEntities(std::vector<Entity*>& entities)
+		inline static void resetEntities(Entities::EntityPtrList& entities)
 		{
 			for (Entity* entity : entities)
 			{
@@ -116,7 +119,7 @@ namespace Entities
 		}
 
 		template<typename T>
-		inline static void insertToEntityPtrList(std::vector<T*>& inList, std::vector<Entity*>& outList)
+		inline static void insertToEntityPtrList(std::vector<T*>& inList, EntityPtrList& outList)
 		{
 			for (T* inElem : inList)
 			{

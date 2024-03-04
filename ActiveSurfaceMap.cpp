@@ -52,9 +52,9 @@ bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, cons
 	{
 		entity->setPosition({ coor.first,coor.second });
 
-		for (int i = coor.second; i < entity->getTilesDistribution().second + coor.second; i++)
+		for (uint32_t i = coor.second; i < entity->getTilesDistribution().second + coor.second; i++)
 		{
-			for (int j = coor.first; j < entity->getTilesDistribution().first + coor.first; j++)
+			for (uint32_t j = coor.first; j < entity->getTilesDistribution().first + coor.first; j++)
 			{
 				Tile* tile = this->getTileByPosition({ j,i });
 				tile->entity = entity;
@@ -122,9 +122,9 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 			{
 				electricPole->setPosition(startPos);
 
-				for (int i = 0; i < electricPoleSideSize; i++)
+				for (uint32_t i = 0; i < electricPoleSideSize; i++)
 				{
-					for (int j = 0; j < electricPoleSideSize; j++)
+					for (uint32_t j = 0; j < electricPoleSideSize; j++)
 					{
 						Tile* tile = getTileByPosition(startPos);
 						if (tile != nullptr)
@@ -152,9 +152,9 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 
 	auto setElectrifiedArea = [&](uintPairCoordinates startPos) -> bool
 		{
-			for (int i = 0; i < electricPoleInfluenceTiles; i++)
+			for (uint32_t i = 0; i < electricPoleInfluenceTiles; i++)
 			{
-				for (int j = 0; j < electricPoleInfluenceTiles; j++)
+				for (uint32_t j = 0; j < electricPoleInfluenceTiles; j++)
 				{
 					Tile* tile = getTileByPosition(startPos);
 					if (tile != nullptr)
@@ -183,6 +183,7 @@ bool TilesMapping::ActiveSurfaceMap::insertElectricPoles(std::vector<Entities::E
 				posY += distanceBetweenPoles;
 				return !(posY > ySize);
 			}
+			return (posX < xSize);
 		};
 
 	for (auto& electricPole : electricPoles)
@@ -268,9 +269,9 @@ const bool TilesMapping::ActiveSurfaceMap::checkTilesAvailability(const uintPair
 
 	unsigned int electrifiedTiles = 0;
 
-	for (int i = pos.second; i < yOffset; i++)
+	for (uint32_t i = pos.second; i < yOffset; i++)
 	{
-		for (int j = pos.first; j < xOffset; j++)
+		for (uint32_t j = pos.first; j < xOffset; j++)
 		{
 			Tile* tile = this->getTileByPosition({ j,i });
 			if (tile == nullptr) { return false; }

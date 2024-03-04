@@ -1,8 +1,10 @@
 #include "gfx.h"
 
 GFX::Window::Window()
+	:
+	event()
 {
-	renderWindow = new sf::RenderWindow(sf::VideoMode(800, 600), "Enhanced Packing Algorithm Visualization");
+	renderWindow = new sf::RenderWindow(sf::VideoMode(1280, 960), "Enhanced Packing Algorithm Visualization");
 }
 
 GFX::Window::~Window()
@@ -22,6 +24,11 @@ void GFX::Window::render()
 void GFX::Window::updateRendereablePosition(const EntityId id, const floatPair pos)
 {
 	renderableObjets.updateEntityPosition(id, pos);
+}
+
+void GFX::Window::resetRendereablePosition(const EntityId id)
+{
+	renderableObjets.resetEntityPosition(id);
 }
 
 void GFX::Window::handleEvents()
@@ -59,6 +66,7 @@ void GFX::Rendereable::draw(sf::RenderWindow& renderWindowRef)
 {
 	for (auto& entity : entityTypeWrapperByEntityId)
 	{
+		if (!entity.second.getIsVisible()) { continue; } //Early for loop control return because we don't want to render an invisible shape
 		EntityRepresentation& entityRepList = entitiesRepMapping.getEntityRep(entity.second);
 		for (auto entityRepElem : entityRepList)
 		{
@@ -73,7 +81,7 @@ void GFX::Rendereable::insert(const EntityId entityId, const EntityTypeWrapper e
 	entityTypeWrapperByEntityId.insert({ entityId,entityTypeWrapper });
 }
 
-void GFX::Rendereable::updateEntityPosition(const EntityId entityId, const floatPair pos)
+void GFX::Rendereable::updateEntityPosition(const EntityId entityId, const floatPair pos, const bool isVisible)
 {
 	EntityTypeWrapperByEntityId::iterator entityTypeWrapperIt = entityTypeWrapperByEntityId.find(entityId);
 
@@ -83,7 +91,12 @@ void GFX::Rendereable::updateEntityPosition(const EntityId entityId, const float
 		return;
 	}
 
-	entityTypeWrapperIt->second.setPosition(pos);
+	entityTypeWrapperIt->second.setPosition(entitiesRepMapping.entityPositionToTilePosition(pos), isVisible);
+}
+
+void GFX::Rendereable::resetEntityPosition(const EntityId entityId)
+{
+	updateEntityPosition(entityId, { 0.0,0.0 }, false);
 }
 
 const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType)
@@ -197,7 +210,7 @@ GFX::ShapeWrapper::~ShapeWrapper()
 	delete textPtr;
 }
 
-void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size)
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const floatPair size)
 {
 	this->relPos = relPos;
 
@@ -208,7 +221,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 		rectShape->setSize(sf::Vector2f({ size.first,size.second }));
 		rectShape->setFillColor(sf::Color::Transparent);
 		rectShape->setOutlineColor(shapeColor);
-		rectShape->setOutlineThickness(2.0);
+		rectShape->setOutlineThickness(1.0);
 	}
 	else
 	{
@@ -216,7 +229,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 }
 
-void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius)
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const float radius)
 {
 	this->relPos = relPos;
 
@@ -227,7 +240,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 		circleShape->setRadius(radius);
 		circleShape->setFillColor(sf::Color::Transparent);
 		circleShape->setOutlineColor(shapeColor);
-		circleShape->setOutlineThickness(2.0);
+		circleShape->setOutlineThickness(1.0);
 	}
 	else
 	{
@@ -235,7 +248,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 }
 
-void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList)
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const PointsList pointsList)
 {
 	this->relPos = relPos;
 
@@ -244,7 +257,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 		sf::ConvexShape* convexShape = dynamic_cast<sf::ConvexShape*>(shapePtr);
 		convexShape->setFillColor(sf::Color::Transparent);
 		convexShape->setOutlineColor(shapeColor);
-		convexShape->setOutlineThickness(2.0);
+		convexShape->setOutlineThickness(1.0);
 
 		int idx = 0;
 		convexShape->setPointCount(pointsList.size());
@@ -260,7 +273,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair 
 	}
 }
 
-void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay, const unsigned int fontSize)
+void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const char* textToDisplay, const unsigned int fontSize)
 {
 	this->relPos = relPos;
 
@@ -284,6 +297,11 @@ void GFX::ShapeWrapper::setPosition(const floatPair absPosition)
 	if (textPtr != nullptr) { textPtr->setPosition({ absPosition.first + relPos.first,absPosition.second + relPos.second }); }
 }
 
+void GFX::ShapeWrapper::resetPosition()
+{
+	this->setPosition({ 0.0,0.0 });
+}
+
 void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 {
 	IOUtil::Asserts::assertMessage((shapePtr != nullptr) || (textPtr != nullptr), "GFX::ShapeWrapper::draw - TextPtr and ShapePtr not initialized.");
@@ -295,12 +313,15 @@ void GFX::ShapeWrapper::draw(sf::RenderWindow& renderWindowRef)
 GFX::EntityTypeWrapper::EntityTypeWrapper(EntityType entityType)
 	:
 	entityType(entityType),
-	position(0.0, 0.0)
+	position(0.0, 0.0),
+	isVisible(false)
 {}
 
 GFX::EntityTypeWrapper::EntityTypeWrapper(const EntityTypeWrapper& entityTypeWrapper)
 	:
-	entityType(entityTypeWrapper.entityType)
+	entityType(entityTypeWrapper.entityType),
+	position(entityTypeWrapper.position),
+	isVisible(entityTypeWrapper.isVisible)
 {}
 
 GFX::EntityTypeWrapper::~EntityTypeWrapper()
@@ -311,9 +332,15 @@ const GFX::floatPair& GFX::EntityTypeWrapper::getPosition()
 	return position;
 }
 
-void GFX::EntityTypeWrapper::setPosition(floatPair position)
+void GFX::EntityTypeWrapper::setPosition(floatPair position, const bool isVisible)
 {
+	this->isVisible = isVisible;
 	this->position = position;
+}
+
+void GFX::EntityTypeWrapper::resetPosition()
+{
+	setPosition({ 0.0,0.0 }, false);
 }
 
 const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType() const
@@ -321,7 +348,12 @@ const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType()
 	return this->entityType;
 }
 
-const unsigned int GFX::EntitiesRepMapping::sPixelsPerTile = 20;
+const bool GFX::EntityTypeWrapper::getIsVisible()
+{
+	return isVisible;
+}
+
+const double GFX::EntitiesRepMapping::sPixelsPerTile = 20;
 
 GFX::EntitiesRepMapping::EntitiesRepMapping()
 	:
@@ -343,7 +375,9 @@ GFX::EntitiesRepMapping::~EntitiesRepMapping()
 
 GFX::EntityRepresentation& GFX::EntitiesRepMapping::getEntityRep(const EntityTypeWrapper& entityType)
 {
-	return EntityRepresentationByEntityType[entityType.getEntityType()];
+	GFX::EntityRepresentationByEntityType::iterator EntityRepresentationByEntityTypeIt = EntityRepresentationByEntityType.find(entityType.getEntityType());
+	IOUtil::Asserts::assertMessage(EntityRepresentationByEntityTypeIt != EntityRepresentationByEntityType.end(), "GFX::EntitiesRepMapping::getEntityRep - Entity representation cannot be identified.");
+	return EntityRepresentationByEntityTypeIt->second;
 }
 
 GFX::floatPair GFX::EntitiesRepMapping::entityTypeSizeConverter(const GFX::EntityTypeWrapper::EntityType entityType)
@@ -401,6 +435,11 @@ GFX::floatPair GFX::EntitiesRepMapping::entityTypeSizeConverter(const GFX::Entit
 	}
 }
 
+GFX::floatPair GFX::EntitiesRepMapping::entityPositionToTilePosition(const floatPair position)
+{
+	return { position.first * sPixelsPerTile,position.second * sPixelsPerTile };
+}
+
 void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 {
 	//--------SOLAR PANEL---------------------
@@ -411,14 +450,14 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::Blue, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
 
-		const float shape2Scale = 0.85;
+		const double shape2Scale = 0.85;
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		floatPair sizeShape2 = { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale), (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale) };
-		const float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
+		const double posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
 		shape2->setShapeInfo(sf::Color::Blue, { posShape2,posShape2 }, { sizeShape2 });
 
 		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
-		shape3->setShapeInfo(sf::Color::White, { posShape2 + 3,posShape2 + 3 }, "SOLAR\nPANEL",10);
+		shape3->setShapeInfo(sf::Color::White, { posShape2 + 3,posShape2 + 3 }, "SOLAR\nPANEL", 10);
 
 		solarPanelRepresentation.emplace_back(shape1);
 		solarPanelRepresentation.emplace_back(shape2);
@@ -431,13 +470,13 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		EntityRepresentation& accumulatorRepresentation = EntityRepresentationByEntityType[accumulator.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-		shape1->setShapeInfo(sf::Color::Red, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR) });
+		shape1->setShapeInfo(sf::Color::Red, { 0.0,0.0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR) });
 
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::CIRCLE_SHAPE);
-		shape2->setShapeInfo(sf::Color::Red, { 0,0 }, entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first / 2.0);
+		shape2->setShapeInfo(sf::Color::Red, { 0.0,0.0 }, entityTypeSizeConverter(EntityTypeWrapper::EntityType::ACCUMULATOR).first / 2.0);
 
 		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
-		shape3->setShapeInfo(sf::Color::White, { 4,15 }, "ACC");
+		shape3->setShapeInfo(sf::Color::White, { 4.0,15.0 }, "ACC");
 
 		accumulatorRepresentation.emplace_back(shape1);
 		accumulatorRepresentation.emplace_back(shape2);

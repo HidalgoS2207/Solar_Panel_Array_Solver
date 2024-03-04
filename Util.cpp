@@ -27,7 +27,7 @@ unsigned int CalculationsUtility::Solver::calculatePotentialMaxEffectiveArea(con
 		const unsigned int totalSideDistance = (squareOfPoles * influenceTiles) + ((squareOfPoles - 1) * (maxDistance - influenceTiles));
 		effectiveArea += (totalSideDistance * (maxDistance - influenceTiles) * (squareOfPoles - 1));
 
-		modNumPoles = std::pow(squareOfPoles, 2);
+		modNumPoles = static_cast<unsigned int>(std::pow(squareOfPoles, 2));
 	}
 	break;
 	default:
@@ -74,7 +74,6 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	const unsigned int printProgressionVal = 100;
 	/*----------*/
 
-	using EntitiesPtrList = std::vector<Entities::Entity*>;
 	using uintPairCoordinates = std::pair<unsigned int, unsigned int>;
 
 	static unsigned int sMaxIterationsNumber = 100000;
@@ -100,9 +99,9 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			uintPairCoordinates entitySize = entityPtr->getTilesDistribution();
 			TilesInfoByTileCoordinates::iterator tilesInfoByTileCoordinatesIt;
 
-			for (int i = 0; i < entitySize.second; i++)
+			for (uint32_t i = 0; i < entitySize.second; i++)
 			{
-				for (int j = 0; j < entitySize.first; j++)
+				for (uint32_t j = 0; j < entitySize.first; j++)
 				{
 					tilesInfoByTileCoordinatesIt = tilesInfoByTileCoordinates.find(pos);
 					if (tilesInfoByTileCoordinatesIt != tilesInfoByTileCoordinates.end())
@@ -120,9 +119,9 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			TilesInfoList tilesInfoList;
 			const uintPairCoordinates tilesMapSize = activeSurfaceMap.getTilesMapSize();
 
-			for (int i = 0; i < tilesMapSize.second; i++)
+			for (uint32_t i = 0; i < tilesMapSize.second; i++)
 			{
-				for (int j = 0; j < tilesMapSize.first; j++)
+				for (uint32_t j = 0; j < tilesMapSize.first; j++)
 				{
 					tilesInfoList.emplace_back();
 					tilesInfoList.back().coordinates = { j,i };
@@ -133,7 +132,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			return tilesInfoList;
 		};
 
-	auto resetTiles = [&](EntitiesPtrList& entitiesList, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates) -> bool
+	auto resetTiles = [&](Entities::EntityPtrList& entitiesList, TilesInfoList& tilesInfoList, TilesInfoByTileCoordinates& tilesInfoByTileCoordinates) -> bool
 		{
 			Entities::Entity::resetEntities(entitiesList);
 			activeSurfaceMap.refreshTilesSate();
@@ -148,7 +147,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			return true;
 		};
 
-	auto setGeneralistOrder = [&](EntitiesPtrList& entitiesToPlace)
+	auto setGeneralistOrder = [&](Entities::EntityPtrList& entitiesToPlace)
 		{
 			switch (solverSettings.entitiesSpawnStrategy)
 			{
@@ -195,17 +194,48 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	// ! Rendering
 	GFX::Window renderHandler;
 
+	std::chrono::steady_clock::time_point instantTime;
 	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
 	std::chrono::nanoseconds t_diff;
-	constexpr double BASE_FPS = 60.0;
-	constexpr double FPS = 120.0;
-	constexpr double NANOS_PER_FRAME = (1000.0) / (FPS) * (1000000.0);
+	std::chrono::nanoseconds delayCount;
+	const double renderDelaySeconds = 0.01;
+	const double nanosecsPerSecond = 1000000000.0;
+	const double renderDelayNanoSeconds = renderDelaySeconds * nanosecsPerSecond;
+	const double BASE_FPS = 60.0;
+	const double FPS = 120.0;
+	const double NANOS_PER_FRAME = (1000.0) / (FPS) * (1000000.0);
 	double timeCount = 0.0;
+
+	Entities::EntityPtrList fullEntityList;
+
+	Entities::Entity::insertToEntityPtrList(solarPanels, fullEntityList);
+	Entities::Entity::insertToEntityPtrList(accumulators, fullEntityList);
+	Entities::Entity::insertToEntityPtrList(electricPoles, fullEntityList);
+
+	for (Entities::Entity* entityPtr : fullEntityList)
+	{
+		const Entities::ENTITY_TYPE entityType = entityPtr->getEntityType();
+		const uint32_t entityId = entityPtr->getEntityId();
+
+		switch (entityType)
+		{
+		case Entities::ENTITY_TYPE::ELECTRIC_POLE:
+		{
+			const Entities::ELECTRIC_POLE_TYPE electricPoleType = dynamic_cast<Entities::ElectricPole*>(entityPtr)->getElectricPoleType();
+			renderHandler.declareRendereable(entityId, entityType, electricPoleType);
+		}
+			break;
+		default:
+			renderHandler.declareRendereable(entityId, entityType);
+			break;
+		}
+	}
 	//----------------------------------------------------------------------
 
 	bool operationSucess = activeSurfaceMap.insertElectricPoles(electricPoles);
 	IOUtil::Asserts::assertMessage(operationSucess, "CalculationsUtility::Solver::calculateArrangement - Cannot correctly set Electric Poles in Map");
-	EntitiesPtrList entitiesToPlace;
+	Entities::EntityPtrList entitiesToPlace;
 	if (operationSucess)
 	{
 		setEntitiesGeneralList(solarPanels, entitiesToPlace);
@@ -239,17 +269,54 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 					}
 				}
 
+				//--------------------------------------------------
+				//Rendering
+				for (Entities::Entity* entityPtr : fullEntityList)
+				{
+					if (!entityPtr->getIsPlaced()) { continue; } //Early for loop control return because we don't want to update an entity that has not been used yet
+					renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
+				}
+
+				delayCount = delayCount.zero();
+				t2 = std::chrono::steady_clock::now();
+				do
+				{
+					instantTime = std::chrono::steady_clock::now();
+
+					t_diff = instantTime - t1;
+					delayCount = instantTime - t2;
+
+					if (t_diff.count() >= NANOS_PER_FRAME)
+					{
+						t1 = std::chrono::steady_clock::now();
+
+						renderHandler.render();
+
+						renderHandler.handleEvents();
+					}
+
+				} while (delayCount.count() < renderDelayNanoSeconds); 	//Keep rendering until the delay is complete then continue with the calculations
+				//--------------------------------------------------
+
 				if (!entityPtr->getIsPlaced())
 				{
+					//--------------------------------------------------
+					//Rendering
+					for (Entities::Entity* entityPtr : fullEntityList)
+					{
+						renderHandler.resetRendereablePosition(entityPtr->getEntityId());
+					}
+					//--------------------------------------------------
+
 					reDistribute = resetTiles(entitiesToPlace, tilesInfoList, tilesInfoByTileCoordinates);
 					setTilesInfoList(tilesInfoList);
 					setGeneralistOrder(entitiesToPlace);
 					iteration++;
-					IOUtil::Asserts::assertMessageFormatted(!(reDistribute && verboseExecution && !(iteration%printProgressionVal)), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
+					IOUtil::Asserts::assertMessageFormatted(!(reDistribute && verboseExecution && !(iteration % printProgressionVal)), "Can't place all entities with the current configuration, resetting tiles map and redistributing.Iteration : %d", iteration);
 					break;
 				}
 			}
-		} while ((iteration < sMaxIterationsNumber) && (reDistribute));
+		} while ((iteration < sMaxIterationsNumber) && (reDistribute) && renderHandler.windowState());
 
 		IOUtil::Asserts::assertMessageFormatted(false, "Calculations ended in Iteration : %d", iteration);
 
@@ -257,7 +324,10 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		const unsigned int totalSurface = activeSurfaceMap.getTilesMapSize().first * activeSurfaceMap.getTilesMapSize().second;
 
 		std::cout << "\n\nUtilized space : " << ((1.f - (static_cast<float>(freeSurface) / static_cast<float>(totalSurface))) * 100.f) << "%\n";
-		
-		activeSurfaceMap.printSurface(); 
+
+		activeSurfaceMap.printSurface();
+
+		Output::Json json;
+		json.saveToFile("bluePrintJsonOutput.txt", fullEntityList);
 	}
 }

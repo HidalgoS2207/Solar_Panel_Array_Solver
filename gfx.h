@@ -35,7 +35,8 @@ namespace GFX
 		~EntityTypeWrapper();
 
 		const floatPair& getPosition();
-		void setPosition(floatPair position);
+		void setPosition(floatPair position, const bool isVisible = true);
+		void resetPosition();
 
 		const EntityTypeWrapper::EntityType getEntityType() const;
 
@@ -43,12 +44,14 @@ namespace GFX
 		{
 			return (entTyWrap1.entityType < entTyWrap2.entityType);
 		}
+
+		const bool getIsVisible();
 	private:
 		EntityType entityType;
 
 		floatPair position;
 
-		bool isPositioned;
+		bool isVisible;
 	};
 
 	class ShapeWrapper
@@ -66,12 +69,13 @@ namespace GFX
 		ShapeWrapper(const ShapeWrapper& shapeWrapperRef);
 		~ShapeWrapper();
 
-		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const floatPair size);
-		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const float radius);
-		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const PointsList pointsList);
-		void setShapeInfo(const sf::Color shapeColor, const uIntPair relPos, const char* textToDisplay, const unsigned int fontSize = sInitialFontSize);
+		void setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const floatPair size);
+		void setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const float radius);
+		void setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const PointsList pointsList);
+		void setShapeInfo(const sf::Color shapeColor, const floatPair relPos, const char* textToDisplay, const unsigned int fontSize = sInitialFontSize);
 
-		void setPosition(const floatPair absPosition);
+		void setPosition(const floatPair absPosition = {0.0,0.0});
+		void resetPosition();
 
 		void draw(sf::RenderWindow& renderWindowRef);
 	private:
@@ -79,7 +83,7 @@ namespace GFX
 		sf::Text* textPtr;
 		sf::Font font;
 		const ShapeType shapeType;
-		uIntPair relPos;
+		floatPair relPos;
 
 		static const char* sFontFilePath;
 		static const unsigned int sInitialFontSize;
@@ -92,12 +96,14 @@ namespace GFX
 	class EntitiesRepMapping
 	{
 	private:
-		const int pixelsPerTile;
+		const double pixelsPerTile;
 	public:
 		EntitiesRepMapping();
 		~EntitiesRepMapping();
 
 		EntityRepresentation& getEntityRep(const EntityTypeWrapper& entityType);
+
+		floatPair entityPositionToTilePosition(const floatPair position);
 	private:
 		floatPair entityTypeSizeConverter(const GFX::EntityTypeWrapper::EntityType entityType);
 
@@ -105,7 +111,7 @@ namespace GFX
 
 		EntityRepresentationByEntityType EntityRepresentationByEntityType;
 
-		static const unsigned int sPixelsPerTile;
+		static const double sPixelsPerTile;
 	};
 
 	class Rendereable
@@ -116,7 +122,8 @@ namespace GFX
 
 		void draw(sf::RenderWindow& renderWindowRef);
 		void insert(const EntityId entityId, const EntityTypeWrapper entityTypeWrapper);
-		void updateEntityPosition(const EntityId entityId, const floatPair pos);
+		void updateEntityPosition(const EntityId entityId, const floatPair pos, const bool isVisible = true);
+		void resetEntityPosition(const EntityId entityId);
 
 		const EntityTypeWrapper getEntityTypeWrapper(Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);
 	private:
@@ -134,6 +141,7 @@ namespace GFX
 
 		void render();
 		void updateRendereablePosition(const EntityId id,const floatPair pos);
+		void resetRendereablePosition(const EntityId id);
 		void handleEvents();
 		bool windowState();
 		void declareRendereable(EntityId entityId, Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);

@@ -3,6 +3,7 @@
 #include "ActiveSurfaceMap.h"
 #include "Entity.h"
 #include "gfx.h"
+#include "Json.h"
 
 #include <algorithm>
 #include <chrono>
@@ -197,7 +198,7 @@ namespace RandomUtility
 			std::default_random_engine e1(r());
 			std::uniform_int_distribution<int> uniform_dist(min, max);
 
-			for (int i = 0; i < retSize; i++)
+			for (uint32_t i = 0; i < retSize; i++)
 			{
 				container.push_back(uniform_dist(e1));
 			}
@@ -222,7 +223,7 @@ namespace RandomUtility
 			case RandomUtility::UNIFORM:
 			{
 				std::vector<int> listOfRandomIdx;
-				UniformDistribution::getIntegersList(list.size(), listOfRandomIdx, 0, list.size() - 1);
+				UniformDistribution::getIntegersList(static_cast<unsigned int>(list.size()), listOfRandomIdx, 0, list.size() - 1);
 				std::vector<int>::iterator listOfRandomIdxIt = listOfRandomIdx.begin();
 				for (auto& listElem : list)
 				{
@@ -313,7 +314,7 @@ namespace CalculationsUtility
 	{
 	private:
 		template<typename E>
-		static inline void setEntitiesGeneralList(std::vector<E*>& listIn, std::vector<Entities::Entity*>& listOut)
+		static inline void setEntitiesGeneralList(std::vector<E*>& listIn, Entities::EntityPtrList& listOut)
 		{
 			for (E* elemIn : listIn)
 			{
