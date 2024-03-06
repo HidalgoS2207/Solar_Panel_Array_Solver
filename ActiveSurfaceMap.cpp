@@ -45,9 +45,6 @@ TilesMapping::ActiveSurfaceMap::~ActiveSurfaceMap()
 
 bool TilesMapping::ActiveSurfaceMap::insertEntity(Entities::Entity* entity, const uintPairCoordinates coor)
 {
-	const unsigned int xSizeEntity = entity->getTilesDistribution().first;
-	const unsigned int ySizeEntity = entity->getTilesDistribution().second;
-
 	if (checkTilesAvailability(entity->getTilesDistribution(), coor))
 	{
 		entity->setPosition({ coor.first,coor.second });

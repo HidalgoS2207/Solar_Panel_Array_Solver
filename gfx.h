@@ -14,6 +14,8 @@ namespace GFX
 	
 	using PointsList = std::vector<floatPair>;
 
+	static const bool verboseExecution = false;
+
 	class EntityTypeWrapper
 	{
 	public:
@@ -45,7 +47,7 @@ namespace GFX
 			return (entTyWrap1.entityType < entTyWrap2.entityType);
 		}
 
-		const bool getIsVisible();
+		const bool getIsVisible() const;
 	private:
 		EntityType entityType;
 
@@ -96,7 +98,6 @@ namespace GFX
 	class EntitiesRepMapping
 	{
 	private:
-		const double pixelsPerTile;
 	public:
 		EntitiesRepMapping();
 		~EntitiesRepMapping();

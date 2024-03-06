@@ -127,7 +127,7 @@ const GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper(Entities::EN
 			break;
 		case Entities::ELECTRIC_POLE_TYPE::INVALID:
 		default:
-			IOUtil::Asserts::assertMessage(false, "GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Electric Pole Type.");
+			IOUtil::Asserts::assertMessage(!GFX::verboseExecution, "GFX::EntityTypeWrapper GFX::Rendereable::getEntityTypeWrapper - Invalid Electric Pole Type.");
 			return EntityTypeWrapper(GFX::EntityTypeWrapper::EntityType::INVALID);
 			break;
 		}
@@ -156,6 +156,8 @@ GFX::ShapeWrapper::ShapeWrapper(ShapeType shapeType)
 	shapePtr(nullptr),
 	textPtr(nullptr)
 {
+	relPos = { 0.0,0.0 };
+
 	switch (shapeType)
 	{
 	case GFX::ShapeWrapper::ShapeType::TEXT:
@@ -221,7 +223,8 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair
 		rectShape->setSize(sf::Vector2f({ size.first,size.second }));
 		rectShape->setFillColor(sf::Color::Transparent);
 		rectShape->setOutlineColor(shapeColor);
-		rectShape->setOutlineThickness(1.0);
+		rectShape->setOutlineThickness(-1.0);
+		rectShape->setScale({ 1.0,1.0 });
 	}
 	else
 	{
@@ -240,7 +243,8 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair
 		circleShape->setRadius(radius);
 		circleShape->setFillColor(sf::Color::Transparent);
 		circleShape->setOutlineColor(shapeColor);
-		circleShape->setOutlineThickness(1.0);
+		circleShape->setOutlineThickness(-1.0);
+		circleShape->setScale({ 1.0,1.0 });
 	}
 	else
 	{
@@ -257,7 +261,8 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair
 		sf::ConvexShape* convexShape = dynamic_cast<sf::ConvexShape*>(shapePtr);
 		convexShape->setFillColor(sf::Color::Transparent);
 		convexShape->setOutlineColor(shapeColor);
-		convexShape->setOutlineThickness(1.0);
+		convexShape->setOutlineThickness(-1.0);
+		convexShape->setScale({ 1.0,1.0 });
 
 		int idx = 0;
 		convexShape->setPointCount(pointsList.size());
@@ -282,6 +287,7 @@ void GFX::ShapeWrapper::setShapeInfo(const sf::Color shapeColor, const floatPair
 		textPtr->setString(textToDisplay);
 		textPtr->setFillColor(shapeColor);
 		textPtr->setCharacterSize(fontSize);
+		textPtr->setScale({ 1.0,1.0 });
 	}
 	else
 	{
@@ -348,7 +354,7 @@ const GFX::EntityTypeWrapper::EntityType GFX::EntityTypeWrapper::getEntityType()
 	return this->entityType;
 }
 
-const bool GFX::EntityTypeWrapper::getIsVisible()
+const bool GFX::EntityTypeWrapper::getIsVisible() const
 {
 	return isVisible;
 }
@@ -356,8 +362,6 @@ const bool GFX::EntityTypeWrapper::getIsVisible()
 const float GFX::EntitiesRepMapping::sPixelsPerTile = 20.0;
 
 GFX::EntitiesRepMapping::EntitiesRepMapping()
-	:
-	pixelsPerTile(sPixelsPerTile)
 {
 	setEntityRepresentationInfo();
 }
@@ -382,50 +386,50 @@ GFX::EntityRepresentation& GFX::EntitiesRepMapping::getEntityRep(const EntityTyp
 
 GFX::floatPair GFX::EntitiesRepMapping::entityTypeSizeConverter(const GFX::EntityTypeWrapper::EntityType entityType)
 {
-	auto getSideOccupiesTilesByElectricPoleType = [](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> const int
+	auto getSideOccupiesTilesByElectricPoleType = [](const Entities::ELECTRIC_POLE_TYPE electricPoleType) -> const float
 		{
-			return static_cast<int>(std::sqrt(Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(electricPoleType)));
+			return static_cast<float>(std::sqrt(Entities::ElectricPoleAreaOccupiedByType::ElectricPoleAreaOccupied.at(electricPoleType)));
 		};
 
 	switch (entityType)
 	{
 	case GFX::EntityTypeWrapper::EntityType::SOLAR_PANEL:
-		return { Entities::SolarPanelSideNumTiles * pixelsPerTile,Entities::SolarPanelSideNumTiles * pixelsPerTile };
+		return { static_cast<float>(Entities::SolarPanelSideNumTiles) * sPixelsPerTile,static_cast<float>(Entities::SolarPanelSideNumTiles) * sPixelsPerTile };
 		break;
 	case GFX::EntityTypeWrapper::EntityType::ACCUMULATOR:
-		return { Entities::AccumulatorSideNumTiles * pixelsPerTile,Entities::AccumulatorSideNumTiles * pixelsPerTile };
+		return { static_cast<float>(Entities::AccumulatorSideNumTiles) * sPixelsPerTile,static_cast<float>(Entities::AccumulatorSideNumTiles) * sPixelsPerTile };
 		break;
 	case GFX::EntityTypeWrapper::EntityType::SMALL_ELECTRIC_POLE:
 	{
-		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SMALL);
-		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+		const float sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SMALL);
+		return { sideOccupiedTiles * sPixelsPerTile,sideOccupiedTiles * sPixelsPerTile };
 	}
 	break;
 	case GFX::EntityTypeWrapper::EntityType::MEDIUM_ELECTRIC_POLE:
 	{
-		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::MEDIUM);
-		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+		const float sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::MEDIUM);
+		return { sideOccupiedTiles * sPixelsPerTile,sideOccupiedTiles * sPixelsPerTile };
 	}
 	break;
 	case GFX::EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE:
 	{
-		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::BIG);
-		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+		const float sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::BIG);
+		return { sideOccupiedTiles * sPixelsPerTile,sideOccupiedTiles * sPixelsPerTile };
 	}
 	case GFX::EntityTypeWrapper::EntityType::SUBSTATION:
 	{
-		const int sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SUBSTATION);
-		return { sideOccupiedTiles * pixelsPerTile,sideOccupiedTiles * pixelsPerTile };
+		const float sideOccupiedTiles = getSideOccupiesTilesByElectricPoleType(Entities::ELECTRIC_POLE_TYPE::SUBSTATION);
+		return { sideOccupiedTiles * sPixelsPerTile,sideOccupiedTiles * sPixelsPerTile };
 	}
 	break;
 	case GFX::EntityTypeWrapper::EntityType::ROBOPORT:
 	{
-		return { Entities::RoboportSideNumTiles * pixelsPerTile,Entities::RoboportSideNumTiles * pixelsPerTile };
+		return { static_cast<float>(Entities::RoboportSideNumTiles) * sPixelsPerTile,static_cast<float>(Entities::RoboportSideNumTiles) * sPixelsPerTile };
 	}
 	break;
 	case GFX::EntityTypeWrapper::EntityType::RADAR:
 	{
-		return { Entities::RadarSideNumTiles * pixelsPerTile,Entities::RadarSideNumTiles * pixelsPerTile };
+		return { static_cast<float>(Entities::RadarSideNumTiles) * sPixelsPerTile,static_cast<float>(Entities::RadarSideNumTiles) * sPixelsPerTile };
 	}
 	break;
 	default:
@@ -437,6 +441,7 @@ GFX::floatPair GFX::EntitiesRepMapping::entityTypeSizeConverter(const GFX::Entit
 
 GFX::floatPair GFX::EntitiesRepMapping::entityPositionToTilePosition(const floatPair position)
 {
+	IOUtil::Asserts::assertMessageFormatted(!GFX::verboseExecution, "PosX = [%f] -> [%f] | PosY = [%f] -> [%f]", position.first, position.first * sPixelsPerTile, position.second, position.second * sPixelsPerTile);
 	return { position.first * sPixelsPerTile,position.second * sPixelsPerTile };
 }
 
@@ -448,12 +453,12 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		EntityRepresentation& solarPanelRepresentation = EntityRepresentationByEntityType[solarPanel.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
-		shape1->setShapeInfo(sf::Color::Blue, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
+		shape1->setShapeInfo(sf::Color::Blue, { 0.0,0.0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL) });
 
-		const double shape2Scale = 0.85;
+		const float shape2Scale = 0.85;
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		floatPair sizeShape2 = { (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale), (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first * shape2Scale) };
-		const double posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
+		const float posShape2 = (entityTypeSizeConverter(EntityTypeWrapper::EntityType::SOLAR_PANEL).first - (sizeShape2.first)) / 2.0;
 		shape2->setShapeInfo(sf::Color::Blue, { posShape2,posShape2 }, { sizeShape2 });
 
 		ShapeWrapper* shape3 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);

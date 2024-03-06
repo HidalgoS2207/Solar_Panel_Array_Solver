@@ -199,7 +199,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	std::chrono::steady_clock::time_point t2;
 	std::chrono::nanoseconds t_diff;
 	std::chrono::nanoseconds delayCount;
-	const double renderDelaySeconds = 0.01;
+	const double renderDelaySeconds = 0.8;
 	const double nanosecsPerSecond = 1000000000.0;
 	const double renderDelayNanoSeconds = renderDelaySeconds * nanosecsPerSecond;
 	const double BASE_FPS = 60.0;

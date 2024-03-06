@@ -127,7 +127,7 @@ namespace IOUtil
 							std::cout << va_arg(args, int);
 							break;
 						case 'f':
-							std::cout << va_arg(args, float);
+							std::cout << va_arg(args, double);
 							break;
 						case 'c':
 							std::cout << va_arg(args, char);
