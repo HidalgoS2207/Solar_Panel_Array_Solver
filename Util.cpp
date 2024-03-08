@@ -199,7 +199,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	std::chrono::steady_clock::time_point t2;
 	std::chrono::nanoseconds t_diff;
 	std::chrono::nanoseconds delayCount;
-	const double renderDelaySeconds = 0.8;
+	const double renderDelaySeconds = 0.2;
 	const double nanosecsPerSecond = 1000000000.0;
 	const double renderDelayNanoSeconds = renderDelaySeconds * nanosecsPerSecond;
 	const double BASE_FPS = 60.0;
@@ -238,6 +238,14 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 	Entities::EntityPtrList entitiesToPlace;
 	if (operationSucess)
 	{
+		//--------------------------------------------------
+		//Rendering
+		for (Entities::Entity* entityPtr : electricPoles)
+		{
+			renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
+		}
+		//--------------------------------------------------
+
 		setEntitiesGeneralList(solarPanels, entitiesToPlace);
 		setEntitiesGeneralList(accumulators, entitiesToPlace);
 
@@ -265,18 +273,13 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 					if (activeSurfaceMap.insertEntity(entityPtr, tileInfo.coordinates))
 					{
 						updateTilesInfo(entityPtr, tilesInfoList, tilesInfoByTileCoordinates, tileInfo.coordinates);
+						// ! Rendering
+						renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
 						break;
 					}
 				}
 
-				//--------------------------------------------------
-				//Rendering
-				for (Entities::Entity* entityPtr : fullEntityList)
-				{
-					if (!entityPtr->getIsPlaced()) { continue; } //Early for loop control return because we don't want to update an entity that has not been used yet
-					renderHandler.updateRendereablePosition(entityPtr->getEntityId(), entityPtr->getPosition());
-				}
-
+				// ! Rendering--------------------------------------
 				delayCount = delayCount.zero();
 				t2 = std::chrono::steady_clock::now();
 				do
