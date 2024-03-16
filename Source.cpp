@@ -10,7 +10,6 @@
 int main(int argc, char* argv[])
 {
 	EntitiesUtility::EntitiesIdGenerator entitiesIdGenerator;
-
 	CalculationsUtility::SolverSettings solverSettings;
 
 	//! Solar Panels
@@ -74,19 +73,29 @@ int main(int argc, char* argv[])
 			"Entities Arrangement Strategy:",
 			{ "Radial In First","Radial Out First","Linear Horizontal","Linear Vertical","Random","Alternate Vertical","Alternate Horizontal" },
 			"Error. Out of range.\n",
-			{ static_cast<int>(CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST),static_cast<int>(CalculationsUtility::EntityArrangementStrategy::ALTERNATE_HOR) }
-		)
-		);
-	solverSettings.entitiesSpawnStrategy = static_cast<CalculationsUtility::EntitySpawnStrategy>(
-		IOUtil::KbdIO::userInputPrompt(
-			"Entites Spawm Strategy:",
-			{ "Full Random","Weighted Random","Full Sequential","Weighted Sequential" },
-			"Error. Out of range.\n",
-			{ static_cast<int>(CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM),static_cast<int>(CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL) }
+			{ static_cast<int>(CalculationsUtility::EntityArrangementStrategy::RADIAL_IN_FIRST),static_cast<int>(CalculationsUtility::EntityArrangementStrategy::ENHANCED) }
 		)
 		);
 
-	CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
+	if (!(solverSettings.entitiesArrangementStrategy == CalculationsUtility::EntityArrangementStrategy::ENHANCED))
+	{
+		solverSettings.entitiesSpawnStrategy = static_cast<CalculationsUtility::EntitySpawnStrategy>(
+			IOUtil::KbdIO::userInputPrompt(
+				"Entites Spawm Strategy:",
+				{ "Full Random","Weighted Random","Full Sequential","Weighted Sequential" },
+				"Error. Out of range.\n",
+				{ static_cast<int>(CalculationsUtility::EntitySpawnStrategy::FULL_RANDOM),static_cast<int>(CalculationsUtility::EntitySpawnStrategy::WEIGHTED_SEQUENCIAL) }
+			)
+			);
+
+		CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
+	}
+	else
+	{
+		solverSettings.entitiesSpawnStrategy = CalculationsUtility::EntitySpawnStrategy::INVALID;
+
+		CalculationsUtility::Solver::calculateArrangement(solverSettings, solarPanels, accumulators, electricPoles);
+	}
 
 	CalculationsUtility::Solver::destroyEntities(solarPanels);
 	CalculationsUtility::Solver::destroyEntities(accumulators);

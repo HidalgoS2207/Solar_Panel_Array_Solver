@@ -69,6 +69,27 @@ std::pair<unsigned int, unsigned int> CalculationsUtility::Solver::calculateSide
 
 void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
 {
+	switch (solverSettings.entitiesArrangementStrategy)
+	{
+	case CalculationsUtility::EntityArrangementStrategy::ENHANCED:
+	{
+		Entities::EntityPtrList fullEntityList;
+
+		Entities::Entity::insertToEntityPtrList(solarPanels, fullEntityList);
+		Entities::Entity::insertToEntityPtrList(accumulators, fullEntityList);
+		Entities::Entity::insertToEntityPtrList(electricPoles, fullEntityList);
+
+		calculateArrangementWithEnhancedAlgorithm(solverSettings, fullEntityList);
+	}
+		break;
+	default:
+		calculateArrangementStandard(solverSettings, solarPanels, accumulators, electricPoles);
+		break;
+	}
+}
+
+void CalculationsUtility::Solver::calculateArrangementStandard(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles)
+{
 	/*Debug vars*/
 	const bool verboseExecution = true;
 	const unsigned int printProgressionVal = 100;
@@ -225,7 +246,7 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 			const Entities::ELECTRIC_POLE_TYPE electricPoleType = dynamic_cast<Entities::ElectricPole*>(entityPtr)->getElectricPoleType();
 			renderHandler.declareRendereable(entityId, entityType, electricPoleType);
 		}
-			break;
+		break;
 		default:
 			renderHandler.declareRendereable(entityId, entityType);
 			break;
@@ -333,4 +354,9 @@ void CalculationsUtility::Solver::calculateArrangement(const SolverSettings& sol
 		Output::Json json;
 		json.saveToFile("bluePrintJsonOutput.txt", fullEntityList);
 	}
+}
+
+void CalculationsUtility::Solver::calculateArrangementWithEnhancedAlgorithm(const SolverSettings& solverSettings, Entities::EntityPtrList entities)
+{
+
 }

@@ -270,7 +270,8 @@ namespace CalculationsUtility
 		LINEAR_VER,
 		RANDOM,
 		ALTERNATE_VER,
-		ALTERNATE_HOR
+		ALTERNATE_HOR,
+		ENHANCED
 	};
 
 	struct SolverSettings
@@ -427,7 +428,11 @@ namespace CalculationsUtility
 
 		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
 		static std::pair<unsigned int, unsigned int> calculateSidesSize(const SolverSettings& solverSettings);
+
 		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
+	private:
+		static void calculateArrangementStandard(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
+		static void calculateArrangementWithEnhancedAlgorithm(const SolverSettings& solverSettings, Entities::EntityPtrList entities);
 	};
 }
 
