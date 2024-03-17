@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Entity.h"
+
 namespace EnhancedAlgorithm
 {
 	class Packing

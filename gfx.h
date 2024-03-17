@@ -3,6 +3,9 @@
 #include "Entity.h"
 #include "Util.h"
 
+#include <chrono>
+#include <numeric>
+
 #include <SFML/Graphics.hpp>
 
 namespace GFX
@@ -137,18 +140,30 @@ namespace GFX
 	class Window
 	{
 	public:
-		Window();
+		Window(const double renderDelaySeconds);
 		~Window();
 
-		void render();
+		void render(const double currentDelayCountSeconds = std::numeric_limits<double>::max());
 		void updateRendereablePosition(const EntityId id,const floatPair pos);
 		void resetRendereablePosition(const EntityId id);
 		void handleEvents();
 		bool windowState();
 		void declareRendereable(EntityId entityId, Entities::ENTITY_TYPE entityType, Entities::ELECTRIC_POLE_TYPE electricPoleType = Entities::ELECTRIC_POLE_TYPE::INVALID);
+	
 	private:
 		sf::RenderWindow* renderWindow;
 		sf::Event event;
 		Rendereable renderableObjets;
+
+		std::chrono::steady_clock::time_point instantTime;
+		std::chrono::steady_clock::time_point t1;
+		std::chrono::steady_clock::time_point t2;
+		std::chrono::nanoseconds t_diff;
+		std::chrono::nanoseconds delayCount;
+		const double nanosecsPerSecond;
+		const double renderDelayNanoSeconds;
+		const double BASE_FPS;
+		const double FPS;
+		const double NANOS_PER_FRAME;
 	};
 }

@@ -27,11 +27,11 @@ namespace TilesMapping
 		{
 			TilesRepresentationMap auxMap;
 
-			auxMap[TileRepresentation::SOLAR_PANEL] = 'S';
-			auxMap[TileRepresentation::ACCUMULATOR] = 'A';
-			auxMap[TileRepresentation::ELECTRIC_POLE] = 'P';
+			auxMap[TileRepresentation::SOLAR_PANEL]				= 'S';
+			auxMap[TileRepresentation::ACCUMULATOR]				= 'A';
+			auxMap[TileRepresentation::ELECTRIC_POLE]			= 'P';
 			auxMap[TileRepresentation::EMPTY_ELECTRIFIED_SPACE] = 'X';
-			auxMap[TileRepresentation::EMPTY_SPACE] = 'O';
+			auxMap[TileRepresentation::EMPTY_SPACE]				= 'O';
 
 			return auxMap;
 		}
@@ -75,7 +75,7 @@ namespace TilesMapping
 			return uintPairCoordinates({ xSize,ySize });
 		}
 
-		inline void refreshTilesSate()
+		inline void refreshTilesState()
 		{
 			for (Tile* tile : tiles)
 			{

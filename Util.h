@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ActiveSurfaceMap.h"
 #include "Entity.h"
+#include "ActiveSurfaceMap.h"
 #include "gfx.h"
 #include "Json.h"
 
@@ -14,6 +14,8 @@
 #include <stdarg.h>
 #include <vector>
 #include <queue>
+
+namespace TilesMapping { class ActiveSurfaceMap; }
 
 namespace EntitiesUtility
 {
@@ -315,6 +317,9 @@ namespace CalculationsUtility
 	class Solver
 	{
 	private:
+		const static bool sSuccess = true;
+		const static bool sFailure = false;
+
 		template<typename E>
 		static inline void setEntitiesGeneralList(std::vector<E*>& listIn, Entities::EntityPtrList& listOut)
 		{
@@ -429,10 +434,20 @@ namespace CalculationsUtility
 		static unsigned int calculatePotentialMaxEffectiveArea(const SolverSettings& solverSettings, unsigned int& effectiveArea);
 		static std::pair<unsigned int, unsigned int> calculateSidesSize(const SolverSettings& solverSettings);
 
-		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
+		static void calculateArrangement(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*>& solarPanels, std::vector<Entities::Accumulator*>& accumulators, std::vector<Entities::ElectricPole*>& electricPoles);
 	private:
-		static void calculateArrangementStandard(const SolverSettings& solverSettings, std::vector<Entities::SolarPanel*> solarPanels, std::vector<Entities::Accumulator*> accumulators, std::vector<Entities::ElectricPole*> electricPoles);
-		static void calculateArrangementWithEnhancedAlgorithm(const SolverSettings& solverSettings, Entities::EntityPtrList entities);
+		static bool calculateArrangementStandard(
+			const SolverSettings& solverSettings
+			, TilesMapping::ActiveSurfaceMap& activeSurfaceMap
+			, std::vector<Entities::SolarPanel*>& solarPanels
+			, std::vector<Entities::Accumulator*>& accumulators
+			, std::vector<Entities::ElectricPole*>& electricPoles
+		    , Entities::EntityPtrList& fullEntityList);
+
+		static bool calculateArrangementWithEnhancedAlgorithm(
+			const SolverSettings& solverSettings
+			, TilesMapping::ActiveSurfaceMap& activeSurfaceMap
+			, Entities::EntityPtrList& entities);
 	};
 }
 

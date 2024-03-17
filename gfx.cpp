@@ -1,8 +1,13 @@
 #include "gfx.h"
 
-GFX::Window::Window()
+GFX::Window::Window(const double renderDelaySeconds)
 	:
-	event()
+	event(),
+	nanosecsPerSecond(1000000000.0),
+	renderDelayNanoSeconds(renderDelaySeconds * nanosecsPerSecond),
+	BASE_FPS(60.0),
+	FPS(60.0),
+	NANOS_PER_FRAME((1000.0) / (FPS) * (1000000.0))
 {
 	renderWindow = new sf::RenderWindow(sf::VideoMode(1280, 960), "Enhanced Packing Algorithm Visualization");
 }
@@ -12,13 +17,37 @@ GFX::Window::~Window()
 	delete renderWindow;
 }
 
-void GFX::Window::render()
+void GFX::Window::render(const double currentDelayCountSeconds)
 {
-	renderWindow->clear();
+	double currentDelayNanoSeconds = renderDelayNanoSeconds;
+	if (
+		currentDelayCountSeconds <= 10.0 &&
+		currentDelayCountSeconds > 0.0)
+	{ currentDelayNanoSeconds = currentDelayCountSeconds * nanosecsPerSecond; }
 
-	renderableObjets.draw(*renderWindow);
+	delayCount = delayCount.zero();
+	t2 = std::chrono::steady_clock::now();
+	do
+	{
+		instantTime = std::chrono::steady_clock::now();
 
-	renderWindow->display();
+		t_diff = instantTime - t1;
+		delayCount = instantTime - t2;
+
+		if (t_diff.count() >= NANOS_PER_FRAME)
+		{
+			t1 = std::chrono::steady_clock::now();
+
+			renderWindow->clear();
+
+			renderableObjets.draw(*renderWindow);
+
+			renderWindow->display();
+
+			handleEvents();
+		}
+
+	} while (delayCount.count() < currentDelayNanoSeconds); 	//Keep rendering until the delay is complete then continue with the calculations
 }
 
 void GFX::Window::updateRendereablePosition(const EntityId id, const floatPair pos)
@@ -520,8 +549,8 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 
 	//--------BIG ELECTRIC POLE---------------
 	{
-		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE);
-		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+		EntityTypeWrapper bigElectricPole(EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE);
+		EntityRepresentation& bigElectricPoleRepresentation = EntityRepresentationByEntityType[bigElectricPole.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::BIG_ELECTRIC_POLE) });
@@ -529,14 +558,14 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
 		shape2->setShapeInfo(sf::Color::White, { 5,5 }, "BP");
 
-		mediumElectricPoleRepresentation.emplace_back(shape1);
-		mediumElectricPoleRepresentation.emplace_back(shape2);
+		bigElectricPoleRepresentation.emplace_back(shape1);
+		bigElectricPoleRepresentation.emplace_back(shape2);
 	}
 
 	//--------SUBSTATION----------------------
 	{
-		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::SUBSTATION);
-		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+		EntityTypeWrapper substation(EntityTypeWrapper::EntityType::SUBSTATION);
+		EntityRepresentation& substationRepresentation = EntityRepresentationByEntityType[substation.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::SUBSTATION) });
@@ -544,14 +573,14 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
 		shape2->setShapeInfo(sf::Color::White, { 5,5 }, "SUB");
 
-		mediumElectricPoleRepresentation.emplace_back(shape1);
-		mediumElectricPoleRepresentation.emplace_back(shape2);
+		substationRepresentation.emplace_back(shape1);
+		substationRepresentation.emplace_back(shape2);
 	}
 
 	//--------ROBOPORT------------------------
 	{
-		EntityTypeWrapper mediumElectricPole(EntityTypeWrapper::EntityType::ROBOPORT);
-		EntityRepresentation& mediumElectricPoleRepresentation = EntityRepresentationByEntityType[mediumElectricPole.getEntityType()];
+		EntityTypeWrapper roboport(EntityTypeWrapper::EntityType::ROBOPORT);
+		EntityRepresentation& roboportRepresentation = EntityRepresentationByEntityType[roboport.getEntityType()];
 
 		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
 		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::ROBOPORT) });
@@ -559,9 +588,22 @@ void GFX::EntitiesRepMapping::setEntityRepresentationInfo()
 		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
 		shape2->setShapeInfo(sf::Color::White, { 2,5 }, "ROB");
 
-		mediumElectricPoleRepresentation.emplace_back(shape1);
-		mediumElectricPoleRepresentation.emplace_back(shape2);
+		roboportRepresentation.emplace_back(shape1);
+		roboportRepresentation.emplace_back(shape2);
 	}
 
 	//--------RADAR---------------------------
+	{
+		EntityTypeWrapper radar(EntityTypeWrapper::EntityType::RADAR);
+		EntityRepresentation& radarRepresentation = EntityRepresentationByEntityType[radar.getEntityType()];
+
+		ShapeWrapper* shape1 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::RECTANGLE_SHAPE);
+		shape1->setShapeInfo(sf::Color::White, { 0,0 }, { entityTypeSizeConverter(EntityTypeWrapper::EntityType::RADAR) });
+
+		ShapeWrapper* shape2 = new ShapeWrapper(GFX::ShapeWrapper::ShapeType::TEXT);
+		shape2->setShapeInfo(sf::Color::White, { 2,5 }, "RAD");
+
+		radarRepresentation.emplace_back(shape1);
+		radarRepresentation.emplace_back(shape2);
+	}
 }
