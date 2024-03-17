@@ -325,7 +325,7 @@ bool CalculationsUtility::Solver::calculateArrangementStandard(
 		}
 	} while ((iteration <= sMaxIterationsNumber) && (reDistribute) && renderHandler.windowState());
 
-	IOUtil::Asserts::assertMessageFormatted(false, "Calculations ended in Iteration : %d", iteration);
+	IOUtil::Asserts::assertMessageFormatted(sFailure, "Calculations ended in Iteration : %d", iteration);
 
 	if ((iteration > sMaxIterationsNumber) && (reDistribute)) { return sFailure; }
 
@@ -340,7 +340,7 @@ bool CalculationsUtility::Solver::calculateArrangementStandard(
 }
 
 bool CalculationsUtility::Solver::calculateArrangementWithEnhancedAlgorithm(
-	const SolverSettings& solverSettings
+	  const SolverSettings& solverSettings
 	, TilesMapping::ActiveSurfaceMap& activeSurfaceMap
 	, Entities::EntityPtrList& entities)
 {
